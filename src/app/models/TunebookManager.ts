@@ -1,0 +1,375 @@
+//import Config from '../Config.es6lib';
+import Tunebook from './Tunebook';
+import LocalStorage from '../utils/LocalStorageUtils';
+
+export class _TunebookManager {
+    private DefaultTunebooks = [];
+    private DefaultSelectedIds: number[];
+    private _tunebooks: Tunebook[];
+    private _selectedIds: Set<number>;
+
+    constructor() {
+        this.DefaultTunebooks = DefaultTunebooks;
+        this.DefaultSelectedIds = DefaultSelectedIds;
+
+        let rawTunebooks = LocalStorage.getItem('tunebooks');
+
+        if (rawTunebooks === null) {
+            rawTunebooks = this.DefaultTunebooks;
+            LocalStorage.setItem('tunebooks', rawTunebooks);
+        }
+
+        this._tunebooks = this._initTunebooks(rawTunebooks);
+
+        let ids: number[] = LocalStorage.getItem('tunebookSelectedIds');
+
+        if (ids === null) {
+            ids = this.DefaultSelectedIds;
+            LocalStorage.setItem('tunebookSelectedIds', ids);
+        }
+
+        this._selectedIds = new Set(ids);
+    }
+
+    _initTunebooks(rawTunebooks: any[]) {
+        const tunebooks = [];
+
+        for (const rawTunebook of rawTunebooks) {
+            tunebooks[rawTunebook.id] = new Tunebook(rawTunebook);
+        }
+
+        if (!tunebooks[0]) {
+            tunebooks[0] = new Tunebook({
+                id: 0,
+                fullName: 'All',
+                shortName: 'All',
+            });
+        }
+
+        return tunebooks;
+    }
+
+    // updateTunebooks($http) {
+    //   return new Promise((resolve, reject) => {
+    //     const url = `${Config.ApiDomain}/api/Sources`;
+
+    //     $http.get(url)
+    //     .success(tunebooks => {
+    //       this._tunebooks = this._initTunebooks(tunebooks);
+    //       LocalStorage.setItem('tunebooks', tunebooks);
+    //       resolve();
+    //     });
+    //   });
+    // }
+
+    get selectedIds() {
+        return this._selectedIds;
+    }
+
+    get selectedShortNames() {
+        if (this._selectedIds.size === 0) {
+            return 'None';
+        }
+        else {
+            let names = '';
+            let i = 0;
+            for (const id of this._selectedIds) {
+                if (i != 0) names += ', ';
+                names += this._tunebooks[id].shortName;
+                i++
+            }
+            return names;
+        }
+    }
+
+    get all() {
+        return this._tunebooks;
+    }
+
+    getById(id: number): Tunebook {
+        return this._tunebooks[id];
+    }
+
+    isSelected(id: number) {
+        return this._selectedIds.has(0) || this._selectedIds.has(id);
+    }
+
+    select(id: number) {
+
+        if (id === 0) {
+            this._selectedIds = new Set([0]);
+        }
+        else {
+            this._selectedIds.add(id);
+            if (this._selectedIds.size === this._tunebooks.length - 1) {
+                this._selectedIds = new Set([0]);
+            }
+        }
+
+        LocalStorage.setItem('tunebookSelectedIds', this._selectedIds);
+    }
+
+    deselect(id: number) {
+        if (id === 0) {
+            this._selectedIds = new Set();
+        }
+        else if (this._selectedIds.has(0)) {
+            this._selectedIds = new Set();
+            for (const tunebook of this._tunebooks) {
+                if (tunebook.id != id && tunebook.id != 0) {
+                    this._selectedIds.add(tunebook.id);
+                }
+            }
+        }
+        else {
+            this._selectedIds.delete(id);
+        }
+
+        LocalStorage.setItem('tunebookSelectedIds', this._selectedIds);
+    }
+
+    toggle(idString: string) {
+        const id = parseInt(idString);
+        this.isSelected(id) ? this.deselect(id) : this.select(id);
+    }
+}
+
+const DefaultSelectedIds = [0];
+
+const DefaultTunebooks = [
+    {
+        "id": 0,
+        "fullName": "All",
+        "shortName": "All"
+    },
+    {
+        "id": 1,
+        "fullName": "thesession.org",
+        "shortName": "thesession.org",
+        "url": "http://thesession.org"
+    },
+    {
+        "id": 2,
+        "fullName": "Henrik Norbeck",
+        "shortName": "Norbeck",
+        "url": "http://www.norbeck.nu/abc/"
+    },
+    {
+        "id": 3,
+        "fullName": "O'Neill's 1001",
+        "shortName": "O'Neill's",
+        "url": "http://trillian.mit.edu/~jc/music/book/oneills/"
+    },
+    {
+        "id": 4,
+        "fullName": "Ceol Rince na hÉireann 1",
+        "shortName": "CRÉ1",
+        "url": "http://www.nigelgatherer.com/books/CRE/cre1.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 5,
+        "fullName": "Ceol Rince na hÉireann 2",
+        "shortName": "CRÉ2",
+        "url": "http://www.nigelgatherer.com/books/CRE/cre2.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 6,
+        "fullName": "Ceol Rince na hÉireann 3",
+        "shortName": "CRÉ3",
+        "url": "http://www.nigelgatherer.com/books/CRE/cre3.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 7,
+        "fullName": "Ceol Rince na hÉireann 4",
+        "shortName": "CRÉ4",
+        "url": "http://www.nigelgatherer.com/books/CRE/cre4.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 8,
+        "fullName": "Johnny O'Leary",
+        "shortName": "O'Leary",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 9,
+        "fullName": "Nigel Gatherer",
+        "shortName": "Nigel Gatherer",
+        "url": "http://www.nigelgatherer.com/tunes/abc.html"
+    },
+    {
+        "id": 10,
+        "fullName": "The Microphone Rambles",
+        "shortName": "The Microphone Rambles",
+        "url": "http://archive.org/details/TheMicrophonesRambles"
+    },
+    {
+        "id": 11,
+        "fullName": "Welsh Music (John Tose)",
+        "shortName": "Welsh Music",
+        "url": "http://johntose.blogspot.ie/"
+    },
+    {
+        "id": 12,
+        "fullName": "Scottish Flute Music (Jack Campin)",
+        "shortName": "Scottish Flute Music",
+        "url": "http://www.campin.me.uk/Flute/Webrelease/Flute/Flute.htm"
+    },
+    {
+        "id": 13,
+        "fullName": "Company of Fife and Drum",
+        "shortName": "Company of Fife and Drum",
+        "url": "http://companyoffifeanddrum.org/"
+    },
+    {
+        "id": 14,
+        "fullName": "Nottingham Music Database",
+        "shortName": "Nottingham",
+        "url": "http://abc.sourceforge.net/NMD/"
+    },
+    {
+        "id": 15,
+        "fullName": "Aird's Airs (Jack Campin)",
+        "shortName": "Aird's Airs",
+        "url": "http://www.campin.me.uk/"
+    },
+    {
+        "id": 16,
+        "fullName": "Ceol Rince na hÉireann 5",
+        "shortName": "CRÉ5",
+        "url": "http://www.nigelgatherer.com/books/CRE/cre5.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 17,
+        "fullName": "The Bill Black Irish Tune Collection v.1",
+        "shortName": "Bill Black Irish Tune Collection",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 18,
+        "fullName": "The Turoe Stone - Collection of tunes by Vincent Broderick",
+        "shortName": "Turroe Stone",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 19,
+        "fullName": "Harding's Original Collection of Jigs and Reels",
+        "shortName": "Harding's",
+        "url": "http://www.capeirish.com/webabc/collections/hoc/home.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 20,
+        "fullName": "CCE session tunes",
+        "shortName": "Comhaltas",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 21,
+        "fullName": "The Leitrim Fiddler Volume 1 - Joe Liddy",
+        "shortName": "Leitrim Fiddler Vol 1",
+        "url": "http://www.capeirish.com/webabc/collections/liddy1/liddy1-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 22,
+        "fullName": "The Leitrim Fiddler Volume 2 - Joe Liddy",
+        "shortName": "Leitrim Fiddler - Vol 2",
+        "url": " http://www.capeirish.com/webabc/collections/liddy2/liddy2-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 23,
+        "fullName": "O'Farrell's Pocket Companion for the Irish or Union Pipes - Vol 1",
+        "shortName": "O'Farrell's - Vol 1",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 24,
+        "fullName": "O'Farrell's Pocket Companion for the Irish or Union Pipes - Vol 2",
+        "shortName": "O'Farrell's - Vol 2",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 25,
+        "fullName": "O'Farrell's Pocket Companion for the Irish or Union Pipes - Vol 3",
+        "shortName": "O'Farrell's - Vol 3",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 26,
+        "fullName": "O'Farrell's Pocket Companion for the Irish or Union Pipes - Vol 4",
+        "shortName": "O'Farrell's - Vol 4",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 27,
+        "fullName": "O'Farrell's Collection of National Irish Music for the Union Pipes",
+        "shortName": "O'Farrell's Collection",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 28,
+        "fullName": "The Music of Brendan Tonra",
+        "shortName": "Brendan Tonra",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 29,
+        "fullName": "Luke O'Malley's Collection of Irish Music Volume 1",
+        "shortName": "Luke O'Malley",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 30,
+        "fullName": "Bill Black's Miscellaneous tunes",
+        "shortName": "Black's Miscellaneous",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Transcribed by Bill Black"
+    },
+    {
+        "id": 31,
+        "fullName": "Mostly Gems",
+        "shortName": "Mostly Gems",
+        "url": "http://www.capeirish.com/webabc/collections/coll-index.html",
+        "extra": "Composed by Bill Black"
+    },
+    {
+        "id": 32,
+        "fullName": "Paul Hardy's Tunebooks",
+        "shortName": "Paul Hardy",
+        "url": "http://www.pghardy.net/concertina/tunebooks/index.html",
+        "extra": "Traditional Celtic and English Tunes from the British Isles"
+    },
+    {
+        "id": 33,
+        "fullName": "William Clarke of Feltwell Tunebook",
+        "shortName": "William Clarke",
+        "url": "http://www.pghardy.net/concertina/tunebooks/#williamclarke",
+        "extra": "Transcribed by Paul Hardy"
+    },
+    {
+        "id": 34,
+        "fullName": "Bulmer and Sharpely \"Music from Ireland\" (1974)",
+        "shortName": "Bulmer & Sharpely",
+        "url": "http://www.capeirish.com/webabc/collections/bsmi/bsmi_project_home.html",
+        "extra": "Transcribed by Bill Black"
+    },
+];
+
+export const TunebookManager = new _TunebookManager();
