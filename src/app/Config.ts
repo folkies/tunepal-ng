@@ -6,7 +6,7 @@ import { TunebookManager, _TunebookManager } from './models/TunebookManager';
 import Utils from './utils/Utils';
 import LocalStorage from './utils/LocalStorageUtils';
 
-class _Config {
+export class _Config implements ConfigProperties {
   Fundamentals: string[];
   MidiInstruments: string[];
   TimeSignatures: object;
@@ -22,11 +22,22 @@ class _Config {
   Properties: Property[];
   audioContext: AudioContext;
   isTesting: boolean;
+
+  // settings
+  blankTime: number;
+  chords: string;
+  countdownTime: number;
+  enableSampleRateConversion: boolean;
+  fundamental: string;
+  melody: string;
   playbackSpeed: number;
+  sampleTime: number;
+  timeSigs: string;
+  transcriberFrameSize: string;
   transpose: number;
 
   private _settings: object;
-  private defaults: object;
+  defaults: any;
   
   constructor() {
     this.Fundamentals = Fundamentals;
@@ -47,7 +58,7 @@ class _Config {
 
     this.Properties = Properties;
 
-    this.audioContext = new window.AudioContext();
+    // this.audioContext = new window.AudioContext();
 
     this.isTesting = false;
 
@@ -106,6 +117,20 @@ let Properties: Property[] = [
   {name: 'transcriberFrameSize', default: TranscriberFrameSizes[0]},
   {name: 'transpose', default: 0},
 ];
+
+export interface ConfigProperties {
+  blankTime?: number;
+  chords?: string;
+  countdownTime?: number;
+  enableSampleRateConversion?: boolean;
+  fundamental?: string;
+  melody?: string;
+  playbackSpeed?: number;
+  sampleTime?: number;
+  timeSigs?: string;
+  transcriberFrameSize?: string;
+  transpose?: number;
+}
 
 let Config = new _Config();
 

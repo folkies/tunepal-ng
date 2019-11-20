@@ -19,6 +19,12 @@ export interface Note {
     qq?: number;
 }
 
+export interface TranscriptionResult {
+    transcription: string;
+    sampleRate: number;
+    numSamples: number;
+}
+
 export default class Transcriber {
     private _inputSampleRate: number;
     private _sampleTime: number;

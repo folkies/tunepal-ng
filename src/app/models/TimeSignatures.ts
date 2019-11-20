@@ -1,4 +1,4 @@
-export default {
+const TimeSignatures: object = {
     "all": "All",
     "reels": "C, C|,  4/4,  2/4,  2/2, 4/2 - Reels, hornpipes, polkas etc.",
     "jigs": "6/8, 12/8 - Jigs, slides etc.",
@@ -7,3 +7,5 @@ export default {
     "unusual_jigs": "3/8 - Unusual Jigs &amp; Waltzes",
     "unusual_hornpipes": "3/2, 6/4 - Unusual English hornpipes and country dances"
 };
+
+export default TimeSignatures;

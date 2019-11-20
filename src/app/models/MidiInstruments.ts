@@ -1,4 +1,4 @@
-export default [
+const MidiInstruments: string[] = [
     'Acoustic Grand Piano',
     'Bright Acoustic Piano',
     'Electric Grand Piano',
@@ -128,3 +128,5 @@ export default [
     'Applause',
     'Gunshot',
 ];
+
+export default MidiInstruments;

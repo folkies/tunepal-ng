@@ -1,3 +1,5 @@
+import { TranscriptionResult } from './Transcriber';
+
 // This is a promise wrapper of TranscriberWorker
 const WorkerPath = 'scripts/transcription/TranscriberWorker.js';
 
@@ -5,7 +7,7 @@ export default class TranscriberAsync {
     private _worker: Worker;
     private _callbacks: any[];
     private _nextId = 0;
-    private onProgress = (x: string) => { };
+    onProgress = (x: number) => { };
 
     constructor() {
         this._worker = new Worker(WorkerPath);
@@ -25,7 +27,7 @@ export default class TranscriberAsync {
         });
     }
 
-    getSignalAsync() {
+    getSignalAsync(): Promise<Float32Array> {
         return this._postMessageAsync({
             cmd: 'getSignal',
         });
@@ -38,7 +40,7 @@ export default class TranscriberAsync {
         });
     }
 
-    transcribeAsync(params) {
+    transcribeAsync(params?): Promise<TranscriptionResult> {
         return this._postMessageAsync({
             cmd: 'transcribe',
             msg: params,
@@ -51,7 +53,7 @@ export default class TranscriberAsync {
         });
     }
 
-    _postMessageAsync(msg) {
+    _postMessageAsync(msg): Promise<any> {
         return new Promise((resolve, reject) => {
             let id = this._nextId++;
             this._callbacks[id] = { resolve: resolve, reject: reject };
