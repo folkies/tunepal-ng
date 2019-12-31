@@ -22,6 +22,7 @@
     "@angular/router": "~8.2.8",
     "@briebug/jest-schematic": "^1.7.0",
     "@types/jquery": "^3.3.31",
+    "angular-audio-context": "^26.0.6",
     "dsp.js": "^1.0.1",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",

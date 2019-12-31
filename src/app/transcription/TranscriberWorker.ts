@@ -4,6 +4,10 @@ const ScriptPaths = [
     '/tunepal/lib/babel/browser-polyfill.js',
 ];
 
+declare function importScripts(...urls: string[]): void;
+declare function postMessage(message: any): void;
+
+
 export default class TranscriberWorker {
     private _transcriber: Transcriber;
     private _signal: Float32Array[];

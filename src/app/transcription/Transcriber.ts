@@ -131,6 +131,11 @@ export default class Transcriber {
             this.onProgress(this._progress);
 
             let frame = this._signal.slice(startAt, startAt + this._frameSize);
+            
+            // skip last frame if it is too short
+            if (frame.length != this._frameSize) {
+                continue;
+            }
 
             this._windowFunction.process(frame);
             let spectrum = this._powerSpectrum.forward(frame);
