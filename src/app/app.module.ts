@@ -5,9 +5,7 @@ import { AudioContextModule } from 'angular-audio-context';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DecodeComponent } from './components/test/DecodeComponent';
-import { TranscriberAsync } from './transcription/TranscriberAsync';
 import { TranscriberProvider } from './transcription/TranscriberProvider';
-
 
 @NgModule({
   declarations: [
@@ -21,7 +19,6 @@ import { TranscriberProvider } from './transcription/TranscriberProvider';
     HttpClientModule
   ],
   providers: [
-    TranscriberAsync,
     TranscriberProvider
   ],
   bootstrap: [AppComponent]

@@ -1,6 +1,6 @@
-import { TranscriptionResponse } from 'src/app/transcription/Transcription';
+import { TranscriptionResponse, ITranscriber, TranscriptionResult, TranscriptionInitParams } from 'src/app/transcription/Transcription';
 import { _Config } from '../../Config';
-import { TranscriberAsync } from '../../transcription/TranscriberAsync';
+import { Remote } from 'comlink';
 
 export default class Recorder {
     private config: _Config;
@@ -10,7 +10,7 @@ export default class Recorder {
     private _timeRecorded: number;
     private _bufferSize: number;
     private _processor: ScriptProcessorNode;
-    private _transcriber: TranscriberAsync;
+    private _transcriber: Remote<ITranscriber>;
     private _stream: MediaStream;
     private _input: MediaStreamAudioSourceNode;
     private _transcription: string;
@@ -49,12 +49,11 @@ export default class Recorder {
         this._status = Status.STOPPED;
         this._audioContext = audioContext;
 
-        this._transcriber = new TranscriberAsync();
 
-        this._transcriber.onProgress = progress => this.analysisProgress = progress;
+        // this._transcriber.onProgress = progress => this.analysisProgress = progress;
     }
 
-    onTranscribed(result: TranscriptionResponse): void {
+    onTranscribed(result: TranscriptionResult): void {
 
     }
 
@@ -77,7 +76,7 @@ export default class Recorder {
     }
 
     close() {
-        this._transcriber._close();
+        //this._transcriber._close();
     }
 
     _onStream(stream, resolve) {
@@ -104,16 +103,16 @@ export default class Recorder {
     start() {
         if (!this._stream) return;
 
-        let initParams = {
+        let initParams: TranscriptionInitParams = {
             inputSampleRate: this._audioContext.sampleRate,
             sampleTime: this.sampleTime,
             blankTime: this.blankTime,
             fundamental: this.fundamental,
             enableSampleRateConversion: this.enableSampleRateConversion,
-            frameSize: this.transcriberFrameSize,
+            frameSize: Number.parseInt(this.transcriberFrameSize),
         };
 
-        this._transcriber.initAsync(initParams)
+        this._transcriber.initialize(initParams)
             .then(() => this._status = Status.RECORDING);
     }
 
@@ -137,7 +136,7 @@ export default class Recorder {
         let audio = e.inputBuffer;
         let signalBuffer = audio.getChannelData(0);
 
-        this._transcriber.pushSignalAsync(signalBuffer)
+        this._transcriber.pushSignal(signalBuffer)
             .then(msg => this._analyzeSignal(msg));
     }
 
@@ -150,14 +149,13 @@ export default class Recorder {
         this.stop();
         this._status = Status.ANALYZING;
 
-        this._transcriber.transcribeAsync()
+        this._transcriber.transcribe()
             .then(result => {
                 this._status = Status.ANALYSIS_SUCCEEDED;
                 this.onTranscribed(result);
-                return this._transcriber.getSignalAsync();
             })
             .then(signal => {
-                this._signal = signal.result;
+                // this._signal = signal.result;
             });
     }
 }

@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { Remote } from 'comlink';
 import Transcriber from 'src/app/transcription/Transcriber';
-import { TranscriberAsync } from 'src/app/transcription/TranscriberAsync';
 import { TranscriberProvider } from 'src/app/transcription/TranscriberProvider';
 import { ITranscriber } from 'src/app/transcription/Transcription';
-import { Remote } from 'comlink';
 
 enum Status {
     STOPPED = 'STOPPED',
@@ -32,7 +31,6 @@ export class DecodeComponent {
     private transcriber: Remote<ITranscriber>;
 
     constructor(
-        private transcriberAsync: TranscriberAsync,
         private transcriberProvider: TranscriberProvider,
         private httpClient: HttpClient) {
             const _AudioContext = window['AudioContext'] || window['webkitAudioContext'];
@@ -80,7 +78,6 @@ export class DecodeComponent {
     
         this.input.connect(this.processor);
         this.processor.connect(this._audioContext.destination);
-    
     }
 
     private _update(e: AudioProcessingEvent) {
@@ -101,14 +98,12 @@ export class DecodeComponent {
         this.stream.getTracks().forEach(t => t.stop());
     }
 
-    async _analyzeSignal(msg): Promise<void> {
-        const _amplitude = msg.amplitude;
-        const _timeRecorded = msg.timeRecorded;
-    
-        if (!msg.isBufferFull) return;
+    async _analyzeSignal(msg): Promise<void> {    
+        if (!msg.isBufferFull) {
+            return;
+        }
 
         this.stop();
-    
         this.status = Status.ANALYZING;
 
         const response = await this.transcriber.transcribe();
@@ -154,23 +149,6 @@ export class DecodeComponent {
         console.log(`Result: ${result}`);
     }
 
-    private async transcribeAsync(audio: AudioBuffer): Promise<void> {
-        this.signal = audio.getChannelData(0);
-        const initParams = {
-            inputSampleRate: audio.sampleRate,
-            sampleTime: audio.duration,
-            fundamental: 'D',
-            enableSampleRateConversion: false,
-            blankTime: 0
-          };
-        this.transcriberAsync.initAsync(initParams);
-        const response = await this.transcriberAsync.transcribeAsync({
-            signal: this.signal,
-            midi: false,            
-        });
-        console.log(`Result: ${response.transcription}`);
-    }
-
     private async transcribeComlink(audio: AudioBuffer): Promise<void> {
         this.signal = audio.getChannelData(0);
         const initParams = {
@@ -185,6 +163,4 @@ export class DecodeComponent {
         const result = await this.transcriber.transcribe(this.signal, false);
         console.log(`Result: ${result.transcription}`);
     }
-
-
 }
