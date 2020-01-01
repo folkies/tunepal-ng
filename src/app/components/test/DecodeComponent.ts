@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
+import * as Comlink from 'comlink';
 import Transcriber from 'src/app/transcription/Transcriber';
 import { TranscriberAsync } from 'src/app/transcription/TranscriberAsync';
+import { ITranscriber } from 'src/app/transcription/Transcription';
 
 enum Status {
     STOPPED = 'STOPPED',
@@ -115,7 +117,7 @@ export class DecodeComponent {
         console.log('Decoding');
         console.log(`numChannels: ${audio.numberOfChannels}, duration: ${audio.duration}`);
 
-        this.transcribeAsync(audio);
+        this.transcribeComlink(audio);
     }
 
     private play(audio: AudioBuffer): void {
@@ -165,4 +167,24 @@ export class DecodeComponent {
         });
         console.log(`Result: ${response.transcription}`);
     }
+
+    private async transcribeComlink(audio: AudioBuffer): Promise<void> {
+        this.signal = audio.getChannelData(0);
+        const initParams = {
+            inputSampleRate: audio.sampleRate,
+            sampleTime: audio.duration,
+            fundamental: 'D',
+            enableSampleRateConversion: false,
+            blankTime: 0
+          };
+
+        const worker =  new Worker('../../transcription/Transcriber.worker', { type: 'module' });
+        const transcriber = Comlink.wrap<ITranscriber>(worker);
+        
+        await transcriber.initialize(initParams);
+        const result = await transcriber.transcribe(this.signal, false);
+        console.log(`Result: ${result.transcription}`);
+    }
+
+
 }

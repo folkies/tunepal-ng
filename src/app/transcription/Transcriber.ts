@@ -1,8 +1,10 @@
+import * as Comlink from 'comlink';
 import { DSP, FFT, WindowFunction } from 'dsp.js';
 import TranscriberUtils from '../utils/TranscriberUtils';
 import FuzzyHistogram from './FuzzyHistogram';
 import PitchDetector from './PitchDetector';
 import PitchSpeller from './PitchSpeller';
+import { TranscriptionInitParams } from './Transcription';
 
 const DEFAULT_SAMPLE_RATE = 22050;
 const DEFAULT_SAMPLE_TIME = 12;
@@ -42,7 +44,7 @@ export default class Transcriber {
     private _windowFunction: WindowFunction;
     private _powerSpectrum: FFT;
 
-    private onProgress: (x: number) => object;
+    private onProgress: (x: number) => void;
 
     get inputSampleRate() { return this._inputSampleRate; }
     get sampleTime() { return this._sampleTime; }
@@ -56,7 +58,7 @@ export default class Transcriber {
     get numInputSamples() { return this._numInputSamples; }
     get numOutputSamples() { return this._numOutputSamples; }
 
-    constructor(params) {
+    constructor(params: TranscriptionInitParams) {
         this._inputSampleRate = typeof params.inputSampleRate !== 'undefined'
             ? params.inputSampleRate
             : DEFAULT_SAMPLE_RATE;
@@ -83,7 +85,7 @@ export default class Transcriber {
 
         this.onProgress = typeof params.onProgress !== 'undefined'
             ? params.onProgress
-            : () => { };
+            : (x: number) => { };
 
         if (this._enableSampleRateConversion) {
             this._outputSampleRate = DEFAULT_SAMPLE_RATE;
@@ -213,4 +215,3 @@ export default class Transcriber {
         return transcription;
     }
 }
-
