@@ -1,70 +1,83 @@
 import { TranscriptionResult } from './Transcriber';
+import { TranscriptionRequest, TranscriptionResponse } from './Transcription';
+import { Subject, Observable, Subscription } from 'rxjs';
+import { fromWorker } from 'observable-webworker';
 
-// This is a promise wrapper of TranscriberWorker
-const WorkerPath = 'scripts/transcription/TranscriberWorker.js';
 
-export default class TranscriberAsync {
-    private _worker: Worker;
-    private _callbacks: any[];
+export class TranscriberAsync {
+    private requestStream = new Subject<TranscriptionRequest>();
+    private _callbacks: any[] = [];
     private _nextId = 0;
     onProgress = (x: number) => { };
+    responseStream: Observable<TranscriptionResponse>;
+    private subscription: Subscription;
 
     constructor() {
-        this._worker = new Worker(WorkerPath);
-        this._worker.addEventListener('message', e => this._onMessage(e));
+        this.responseStream = fromWorker<TranscriptionRequest, TranscriptionResponse>(this.createWorker, this.requestStream);
+        this.subscription = this.responseStream.subscribe(resp => this._onMessage(resp));
     }
 
-    initAsync(params) {
+    private createWorker(): Worker {
+        return new Worker('./Transcriber.worker', { type: 'module' });
+    }
+
+
+    initAsync(params): Promise<TranscriptionResponse>  {
         return this._postMessageAsync({
             cmd: 'init',
             msg: params,
         });
     }
 
-    resetSignalAsync() {
+    resetSignalAsync(): Promise<TranscriptionResponse>  {
         return this._postMessageAsync({
             cmd: 'resetSignal',
         });
     }
 
-    getSignalAsync(): Promise<Float32Array> {
+    getSignalAsync(): Promise<TranscriptionResponse> {
         return this._postMessageAsync({
             cmd: 'getSignal',
         });
     }
 
-    pushSignalAsync(signal) {
+    pushSignalAsync(signal): Promise<TranscriptionResponse>  {
         return this._postMessageAsync({
             cmd: 'pushSignal',
             msg: signal,
         });
     }
 
-    transcribeAsync(params?): Promise<TranscriptionResult> {
+    transcribeAsync(params?): Promise<any> {
         return this._postMessageAsync({
             cmd: 'transcribe',
             msg: params,
         });
     }
 
-    close() {
+    _close() {
         return this._postMessageAsync({
             cmd: 'close',
         });
     }
 
-    _postMessageAsync(msg): Promise<any> {
+    onDestroy(): void {
+        this.requestStream.complete();
+        this.subscription.unsubscribe();
+    }
+
+
+    _postMessageAsync(msg: TranscriptionRequest): Promise<TranscriptionResponse> {
         return new Promise((resolve, reject) => {
             let id = this._nextId++;
             this._callbacks[id] = { resolve: resolve, reject: reject };
 
             msg.id = id;
-            this._worker.postMessage(msg);
+            this.requestStream.next(msg);
         });
     }
 
-    _onMessage(e) {
-        const data = e.data;
+    _onMessage(data: TranscriptionResponse) {
 
         switch (data.cmd) {
             case 'onProgress':

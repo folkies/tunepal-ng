@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DecodeComponent } from './components/test/DecodeComponent';
 import { HttpClientModule } from '@angular/common/http';
+import { TranscriberAsync } from './transcription/TranscriberAsync';
 
 
 @NgModule({
@@ -18,7 +19,9 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    TranscriberAsync
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

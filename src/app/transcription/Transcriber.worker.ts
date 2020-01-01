@@ -1,31 +1,29 @@
+import { DoWork, ObservableWorker } from 'observable-webworker';
 import Transcriber from './Transcriber';
-const ScriptPaths = [
-    '/tunepal/lib/dsp.js/dsp.js',
-    '/tunepal/lib/babel/browser-polyfill.js',
-];
-
-declare function importScripts(...urls: string[]): void;
-declare function postMessage(message: any): void;
+import { TranscriptionRequest, TranscriptionResponse } from './Transcription';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 
-export default class TranscriberWorker {
+@ObservableWorker()
+export class TranscriberWorker implements DoWork<TranscriptionRequest, TranscriptionResponse> {
     private _transcriber: Transcriber;
     private _signal: Float32Array[];
     private _currNumSamples: number;
 
-    constructor() {
-        for (let i = 0; i < ScriptPaths.length; i++) {
-            importScripts(ScriptPaths[i]);
-        }
+    private output$: Observable<TranscriptionResponse>;
 
-        self.addEventListener('message', e => this.onMessage(e));
+    work(input$: Observable<TranscriptionRequest>): Observable<TranscriptionResponse> {
+        this.output$ = input$.pipe(
+            map(message => this.onMessage(message))
+        );
+        return this.output$;
     }
 
-    onMessage(e) {
-        let data = e.data;
+    onMessage(data: TranscriptionRequest): TranscriptionResponse {
         let msg = data.msg || {};
         let result = 'success';
-        let resultMsg;
+        let resultMsg: any;
 
         switch (data.cmd) {
             case 'init':
@@ -55,23 +53,23 @@ export default class TranscriberWorker {
                 };
                 break;
             case 'close':
-                self.close();
+                //self._close();
                 break;
         }
 
-        postMessage({
+        return {
             id: data.id,
             cmd: data.cmd,
             result: result,
             msg: resultMsg,
-        });
+        };
     }
 
     _onProgress(progress) {
-        postMessage({
-            cmd: 'onProgress',
-            msg: progress,
-        });
+        // this.output$.next({
+        //     cmd: 'onProgress',
+        //     msg: progress,
+        // });
     }
 
     _resetSignal() {
@@ -79,7 +77,7 @@ export default class TranscriberWorker {
         this._currNumSamples = 0;
     }
 
-    _pushSignal(signal) {
+    _pushSignal(signal: Float32Array) {
         this._signal.push(signal);
         this._currNumSamples += signal.length;
 
@@ -116,10 +114,4 @@ export default class TranscriberWorker {
 
         return signal;
     }
-}
-
-// Web workers only work in the Web worker environment
-// where window is undefined
-if (typeof window === 'undefined') {
-    new TranscriberWorker();
 }

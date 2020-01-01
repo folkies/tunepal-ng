@@ -1,7 +1,6 @@
-import Utils from '../../utils/Utils';
-import TranscriberAsync from '../../transcription/TranscriberAsync';
+import { TranscriptionResponse } from 'src/app/transcription/Transcription';
 import { _Config } from '../../Config';
-import { TranscriptionResult } from '../../transcription/Transcriber';
+import { TranscriberAsync } from '../../transcription/TranscriberAsync';
 
 export default class Recorder {
     private config: _Config;
@@ -55,7 +54,7 @@ export default class Recorder {
         this._transcriber.onProgress = progress => this.analysisProgress = progress;
     }
 
-    onTranscribed(result: TranscriptionResult): void {
+    onTranscribed(result: TranscriptionResponse): void {
 
     }
 
@@ -78,7 +77,7 @@ export default class Recorder {
     }
 
     close() {
-        this._transcriber.close();
+        this._transcriber._close();
     }
 
     _onStream(stream, resolve) {
@@ -158,7 +157,7 @@ export default class Recorder {
                 return this._transcriber.getSignalAsync();
             })
             .then(signal => {
-                this._signal = signal;
+                this._signal = signal.result;
             });
     }
 }
