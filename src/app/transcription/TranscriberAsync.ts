@@ -13,12 +13,12 @@ export class TranscriberAsync {
     private subscription: Subscription;
 
     constructor() {
-        this.responseStream = fromWorker<TranscriptionRequest, TranscriptionResponse>(this.createWorker, this.requestStream);
-        this.subscription = this.responseStream.subscribe(resp => this._onMessage(resp));
+        // this.responseStream = fromWorker<TranscriptionRequest, TranscriptionResponse>(this.createWorker, this.requestStream);
+        // this.subscription = this.responseStream.subscribe(resp => this._onMessage(resp));
     }
 
     private createWorker(): Worker {
-        return new Worker('./Transcriber.worker', { type: 'module' });
+        return null; // new Worker('./Transcriber.worker', { type: 'module' });
     }
 
 

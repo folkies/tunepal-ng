@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as Comlink from 'comlink';
 
-@ObservableWorker()
+//@ObservableWorker()
 export class TranscriberWorker implements DoWork<TranscriptionRequest, TranscriptionResponse> {
     private _transcriber: Transcriber;
     private _signal: Float32Array[];

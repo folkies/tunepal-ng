@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import * as Comlink from 'comlink';
 import Transcriber from 'src/app/transcription/Transcriber';
 import { TranscriberAsync } from 'src/app/transcription/TranscriberAsync';
-import { ITranscriber } from 'src/app/transcription/Transcription';
+import { TranscriberProvider } from 'src/app/transcription/TranscriberProvider';
 
 enum Status {
     STOPPED = 'STOPPED',
@@ -15,7 +14,6 @@ enum Status {
     ANALYSIS_SUCCEEDED = 'ANALYSIS_SUCCEEDED',
     API_MISSING = 'API_MISSING',
 };
-  
 
 @Component({
     selector: 'my-decode',
@@ -32,6 +30,7 @@ export class DecodeComponent {
 
     constructor(
         private transcriberAsync: TranscriberAsync,
+        private transcriberProvider: TranscriberProvider,
         private httpClient: HttpClient) {
             const _AudioContext = window['AudioContext'] || window['webkitAudioContext'];
             this._audioContext = new _AudioContext();
@@ -178,9 +177,7 @@ export class DecodeComponent {
             blankTime: 0
           };
 
-        const worker =  new Worker('../../transcription/Transcriber.worker', { type: 'module' });
-        const transcriber = Comlink.wrap<ITranscriber>(worker);
-        
+        const transcriber = this.transcriberProvider.transcriber();        
         await transcriber.initialize(initParams);
         const result = await transcriber.transcribe(this.signal, false);
         console.log(`Result: ${result.transcription}`);
