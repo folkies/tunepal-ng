@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import Transcriber from 'src/app/transcription/Transcriber';
 import { TranscriberAsync } from 'src/app/transcription/TranscriberAsync';
 import { TranscriberProvider } from 'src/app/transcription/TranscriberProvider';
+import { ITranscriber } from 'src/app/transcription/Transcription';
+import { Remote } from 'comlink';
 
 enum Status {
     STOPPED = 'STOPPED',
@@ -27,6 +29,7 @@ export class DecodeComponent {
     private stream: MediaStream;
     private input: MediaStreamAudioSourceNode;
     private processor: ScriptProcessorNode;
+    private transcriber: Remote<ITranscriber>;
 
     constructor(
         private transcriberAsync: TranscriberAsync,
@@ -35,6 +38,7 @@ export class DecodeComponent {
             const _AudioContext = window['AudioContext'] || window['webkitAudioContext'];
             this._audioContext = new _AudioContext();
             this.status = Status.STOPPED;
+            this.transcriber = this.transcriberProvider.transcriber();
     }
 
     public async decode(): Promise<void> {
@@ -64,7 +68,7 @@ export class DecodeComponent {
             enableSampleRateConversion: false,
             blankTime: 0
           };
-        this.transcriberAsync.initAsync(initParams);
+        this.transcriber.initialize(initParams);
         this.status = Status.RECORDING;  
 
         const bufferSize = 4096;
@@ -86,7 +90,7 @@ export class DecodeComponent {
         const audio = e.inputBuffer;
         const signalBuffer = audio.getChannelData(0);
     
-        this.transcriberAsync.pushSignalAsync(signalBuffer)
+        this.transcriber.pushSignal(signalBuffer)
            .then(msg => this._analyzeSignal(msg));    
     }
 
@@ -107,7 +111,7 @@ export class DecodeComponent {
     
         this.status = Status.ANALYZING;
 
-        const response = await this.transcriberAsync.transcribeAsync();
+        const response = await this.transcriber.transcribe();
         console.log(`Result: ${response.transcription}`);
       }
     
@@ -177,9 +181,8 @@ export class DecodeComponent {
             blankTime: 0
           };
 
-        const transcriber = this.transcriberProvider.transcriber();        
-        await transcriber.initialize(initParams);
-        const result = await transcriber.transcribe(this.signal, false);
+        await this.transcriber.initialize(initParams);
+        const result = await this.transcriber.transcribe(this.signal, false);
         console.log(`Result: ${result.transcription}`);
     }
 
