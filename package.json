@@ -24,8 +24,6 @@
     "@types/jquery": "^3.3.31",
     "angular-audio-context": "^26.0.6",
     "comlink": "^4.2.0",
-    "dsp.js": "^1.0.1",
-    "observable-webworker": "^3.2.3",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"

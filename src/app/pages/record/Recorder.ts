@@ -1,4 +1,4 @@
-import { TranscriptionResponse, ITranscriber, TranscriptionResult, TranscriptionInitParams } from 'src/app/transcription/Transcription';
+import { ITranscriber, TranscriptionResult, TranscriptionInitParams } from 'src/app/transcription/Transcription';
 import { _Config } from '../../Config';
 import { Remote } from 'comlink';
 

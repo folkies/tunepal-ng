@@ -1,5 +1,4 @@
-import * as Comlink from 'comlink';
-import { DSP, FFT, WindowFunction } from 'dsp.js';
+import { DSP, FFT, WindowFunction } from 'src/lib/dsp';
 import TranscriberUtils from '../utils/TranscriberUtils';
 import FuzzyHistogram from './FuzzyHistogram';
 import PitchDetector from './PitchDetector';

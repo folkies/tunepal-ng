@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import * as Comlink from 'comlink';
+import { Remote, wrap } from 'comlink';
 import { ITranscriber } from './Transcription';
 
 @Injectable()
 export class TranscriberProvider {
 
-    private instance: Comlink.Remote<ITranscriber>; 
+    private instance: Remote<ITranscriber>; 
 
-    transcriber(): Comlink.Remote<ITranscriber> {
+    transcriber(): Remote<ITranscriber> {
         if (! this.instance) {
             const worker =  new Worker('./Transcriber.worker', { type: 'module' });
-            this.instance = Comlink.wrap<ITranscriber>(worker);
+            this.instance = wrap<ITranscriber>(worker);
         }
         return this.instance;
     } 
