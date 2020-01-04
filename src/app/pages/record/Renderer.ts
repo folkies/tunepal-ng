@@ -1,7 +1,7 @@
 import Config from '../../Config';
-import Recorder, { Status } from './Recorder';
+import { Recorder, Status } from './Recorder';
 import { _Config } from '../../Config';
-const LogoPath = 'images/recording_logo.png';
+const LogoPath = 'assets/images/recording_logo.png';
 
 interface Point {
     x: number;

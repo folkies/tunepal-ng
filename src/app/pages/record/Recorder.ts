@@ -1,8 +1,11 @@
 import { ITranscriber, TranscriptionResult, TranscriptionInitParams } from 'src/app/transcription/Transcription';
 import { _Config } from '../../Config';
 import { Remote } from 'comlink';
+import { Injectable } from '@angular/core';
+import Config from '../../Config';
 
-export default class Recorder {
+@Injectable()
+export class Recorder {
     private config: _Config;
     private _status: Status;
     private _audioContext: AudioContext;
@@ -43,11 +46,13 @@ export default class Recorder {
     get status() { return this._status; }
     get signal() { return this._signal; }
 
-    constructor(config: _Config, audioContext: AudioContext) {
-        this.config = config;
+    constructor() {
+        this.config = Config;
 
         this._status = Status.STOPPED;
-        this._audioContext = audioContext;
+
+        const _AudioContext = window['AudioContext'] || window['webkitAudioContext'];
+        this._audioContext = new _AudioContext();
 
 
         // this._transcriber.onProgress = progress => this.analysisProgress = progress;
