@@ -49,8 +49,8 @@ export class _Config implements ConfigProperties {
     this.CountdownTime = Utils.makeArray(0, 10);
     this.PlaybackSpeed = Utils.makeArray(1, 10);
     this.Transpose = Utils.makeArray(-12, 12);
-    // this.ApiDomain = 'https://cors-anywhere.herokuapp.com/https://tunepal.org/tunepal2';
-    this.ApiDomain = 'https://tunepal.org/tunepal2';
+    this.ApiDomain = 'https://cors-anywhere.herokuapp.com/https://tunepal.org/tunepal2';
+    // this.ApiDomain = 'https://tunepal.org/tunepal2';
     // this.ApiDomain = '/tunepal2';
     this.EuropeanaApiDomain = 'https://www.europeana.eu/api/v2';
     this.EuropeanaPortalDomain = 'https://www.europeana.eu/portal/search.html';

@@ -3,6 +3,7 @@ import { Remote } from 'comlink';
 import { TranscriberProvider } from 'src/app/transcription/TranscriberProvider';
 import { ITranscriber, PushResult, TranscriptionInitParams, TranscriptionResult } from 'src/app/transcription/Transcription';
 import Config, { _Config } from '../../Config';
+import { AudioContextProvider } from 'src/app/service/AudioContextProvider';
 
 @Injectable()
 export class Recorder {
@@ -45,7 +46,7 @@ export class Recorder {
     get status() { return this._status; }
     get signal() { return this._signal; }
 
-    constructor(private transcriberProvider: TranscriberProvider) {
+    constructor(private audioContextProvider: AudioContextProvider, private transcriberProvider: TranscriberProvider) {
         this.config = Config;
         this._transcriber = this.transcriberProvider.transcriber();
 
@@ -56,12 +57,7 @@ export class Recorder {
     }
 
     async initAudio(): Promise<void> {
-        const _AudioContext = window['AudioContext'] || window['webkitAudioContext'];
-        this._audioContext = new _AudioContext();
-
-        if (this._audioContext.state === 'suspended') {
-            await this._audioContext.resume();
-        }
+        this._audioContext = await this.audioContextProvider.audioContext();
 
         try {
             this._stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -75,8 +71,7 @@ export class Recorder {
                 this._processor.onaudioprocess = e => this._update(e);
             
                 this._input.connect(this._processor);
-                this._processor.connect(this._audioContext.destination);
-        
+                this._processor.connect(this._audioContext.destination);        
             }
         }
         catch (err) {

@@ -1,6 +1,7 @@
 import Config from '../Config';
 import { TunebookManager } from './TunebookManager';
 import Tunebook from './Tunebook';
+import { RawTune } from './RawTune';
 
 export default class Tune {
     title: string;
@@ -18,7 +19,7 @@ export default class Tune {
     ed: any;
     notation: string;
 
-    constructor(rawTune: any) {
+    constructor(rawTune: RawTune) {
         if (rawTune.title) {
             const tmp = rawTune.title.replace(/, The$/, '');
             this.title = tmp.length === rawTune.title.length ? tmp : `The ${tmp}`;

@@ -7,11 +7,14 @@ import { RecorderComponent } from './components/recorder/RecorderComponent';
 import { DecodeComponent } from './components/test/DecodeComponent';
 import { Recorder } from './pages/record/Recorder';
 import { TranscriberProvider } from './transcription/TranscriberProvider';
+import { AudioContextProvider } from './service/AudioContextProvider';
+import { NotesSearchComponent } from './components/notes-search/NotesSearchComponent';
 
 @NgModule({
     declarations: [
         AppComponent,
         DecodeComponent,
+        NotesSearchComponent,
         RecorderComponent
     ],
     imports: [
@@ -20,6 +23,7 @@ import { TranscriberProvider } from './transcription/TranscriberProvider';
         HttpClientModule,
     ],
     providers: [
+        AudioContextProvider,
         Recorder,
         TranscriberProvider
     ],

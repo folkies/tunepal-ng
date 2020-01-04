@@ -12,11 +12,11 @@ import Config, { _Config } from '../../Config';
     templateUrl: './RecorderComponent.html'
 })
 export class RecorderComponent implements AfterViewInit {
+
     @ViewChild('canvas', { static: false })
-    canvas: ElementRef;
+    canvas: ElementRef<HTMLCanvasElement>;
 
     config: _Config;
-    private _canvas: HTMLCanvasElement;
     private _container: HTMLElement;
     private renderer: Renderer;
     private _requestId: number;
@@ -36,9 +36,8 @@ export class RecorderComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        this._canvas = this.canvas.nativeElement as HTMLCanvasElement;
-        this._container = this._canvas.parentElement;
-        this.renderer = new Renderer(this.config, this.recorder, this._canvas, this._container);
+        this._container = this.canvas.nativeElement.parentElement;
+        this.renderer = new Renderer(this.config, this.recorder, this.canvas.nativeElement, this._container);
     }
 
     _update() {
