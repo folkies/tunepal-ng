@@ -11,7 +11,6 @@ export class Recorder {
     private _audioContext: AudioContext;
     private _amplitude: number;
     private _timeRecorded: number;
-    private _bufferSize: number;
     private _processor: ScriptProcessorNode;
     private _transcriber: Remote<ITranscriber>;
     private _stream: MediaStream;
@@ -51,14 +50,9 @@ export class Recorder {
         this._transcriber = this.transcriberProvider.transcriber();
 
         this._status = Status.STOPPED;
-
-
-
-        // this._transcriber.onProgress = progress => this.analysisProgress = progress;
     }
 
     onTranscribed(result: TranscriptionResult): void {
-        console.log(`Transcription: ${result.transcription}`);
     }
 
     async initAudio(): Promise<void> {
@@ -103,7 +97,6 @@ export class Recorder {
             blankTime: this.blankTime,
             fundamental: this.fundamental,
             enableSampleRateConversion: this.enableSampleRateConversion,
-            //frameSize: Number.parseInt(this.transcriberFrameSize),
         };
 
         this._transcriber.initialize(initParams)
@@ -114,15 +107,15 @@ export class Recorder {
         this._status = Status.STOPPED;
         this._amplitude = 0;
         this._timeRecorded = 0;
+        this._stream && this._stream.getTracks().forEach(t => t.stop());
     }
 
     destroy() {
-        this._status = Status.STOPPED;
-        this._stream && this._stream.getTracks().forEach(t => t.stop());
+        this.stop();
         this._stream = null;
     }
 
-    _update(e: AudioProcessingEvent) {
+    async _update(e: AudioProcessingEvent): Promise<void> {
         if (this._status != Status.RECORDING) {
             return;
         };
@@ -130,27 +123,22 @@ export class Recorder {
         let audio = e.inputBuffer;
         let signalBuffer = audio.getChannelData(0);
 
-        this._transcriber.pushSignal(signalBuffer)
-            .then(msg => this._analyzeSignal(msg));
-    }
-
-    _analyzeSignal(msg: PushResult) {
+        const msg = await this._transcriber.pushSignal(signalBuffer)
         this._amplitude = msg.amplitude;
         this._timeRecorded = msg.timeRecorded;
 
-        if (!msg.isBufferFull) return;
+        if (msg.isBufferFull) {
+            await this._analyzeSignal(msg);
+        }
+    }
 
+    async _analyzeSignal(msg: PushResult): Promise<void> {
         this.stop();
         this._status = Status.ANALYZING;
 
-        this._transcriber.transcribe()
-            .then(result => {
-                this._status = Status.ANALYSIS_SUCCEEDED;
-                this.onTranscribed(result);
-            })
-            .then(signal => {
-                // this._signal = signal.result;
-            });
+        const result = await this._transcriber.transcribe();
+        this._status = Status.ANALYSIS_SUCCEEDED;
+        this.onTranscribed(result);
     }
 }
 

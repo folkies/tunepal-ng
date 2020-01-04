@@ -25,7 +25,7 @@ export class RecorderComponent implements AfterViewInit {
         this.config = Config;
         this.recorder = recorder;
         this.recorder.onTranscribed = result => this.onTranscribed(result);
-        this._requestId = window.requestAnimationFrame(() => this._update());
+        this._requestId = zone.runOutsideAngular(() => window.requestAnimationFrame(() => this._update()));
 
         router.events
             .pipe(filter(evt => evt instanceof NavigationStart))
@@ -47,6 +47,7 @@ export class RecorderComponent implements AfterViewInit {
     }
 
     onTranscribed(result: TranscriptionResult) {
+        console.log(`Transcription: ${result.transcription}`);
         this.zone.run(() =>
             this.router.navigate([`/notesSearch/${result.transcription}`]));
     }
