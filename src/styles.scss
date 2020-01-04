@@ -16,12 +16,14 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
 $navbar-height: 64px !default;
 $navbar-height-mobile: 56px !default;
 
-$primary-background-color: #303030 !default;
+// $primary-background-color: #303030 !default;
+
+@import '@angular/material/prebuilt-themes/purple-green.css';
 
 
-body, .modal {
-    background-color: $primary-background-color;
-}
+// body, .modal {
+//     background-color: $primary-background-color;
+// }
   
 
 
@@ -47,3 +49,7 @@ body, .modal {
   
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.tune-link {
+  cursor: pointer;
+}

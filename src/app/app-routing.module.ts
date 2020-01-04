@@ -7,6 +7,7 @@ import { NotesSearchComponent } from './components/notes-search/NotesSearchCompo
 const routes: Routes = [
   { path: 'record', component: RecorderComponent },
   { path: 'notesSearch/:notes', component: NotesSearchComponent },
+  { path: 'tune/:tunepalId', component: RecorderComponent },
   {
       path: '',
       redirectTo: '/record',

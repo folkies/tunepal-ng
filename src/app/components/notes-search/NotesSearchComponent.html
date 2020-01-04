@@ -1,3 +1,7 @@
-<ul>
-    <li *ngFor="let tune of tunes">{{tune.title}} {{tune.confidence}}</li>
-</ul>
+<mat-list class="tune-list">
+    <mat-list-item *ngFor="let tune of tunes">
+        <div class="tune-item">
+            <div class="tune-link" routerLink="../../tune/{{tune.tunepalId}}">{{tune.title}} {{tune.confidence}}</div>
+        </div>
+    </mat-list-item>
+</mat-list>
