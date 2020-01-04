@@ -24,6 +24,7 @@
     "@angular/router": "~8.2.8",
     "@briebug/jest-schematic": "^1.7.0",
     "@types/jquery": "^3.3.31",
+    "abcjs": "^5.12.0",
     "angular-audio-context": "^26.0.6",
     "comlink": "^4.2.0",
     "hammerjs": "^2.0.8",

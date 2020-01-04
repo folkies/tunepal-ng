@@ -11,13 +11,17 @@ import { TranscriberProvider } from './transcription/TranscriberProvider';
 import { AudioContextProvider } from './service/AudioContextProvider';
 import { NotesSearchComponent } from './components/notes-search/NotesSearchComponent';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TuneComponent } from './components/tune/TuneComponent';
+import { TuneViewComponent } from './components/tune-view/tune-view.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         DecodeComponent,
         NotesSearchComponent,
-        RecorderComponent
+        RecorderComponent,
+        TuneComponent,
+        TuneViewComponent
     ],
     imports: [
         AppRoutingModule,

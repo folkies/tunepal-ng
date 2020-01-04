@@ -53,3 +53,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .tune-link {
   cursor: pointer;
 }
+
+div.tune-view {
+  max-width: 1000px;
+  background-color: whitesmoke;
+  margin: 10px;
+  padding: 10px;
+}
+
+div.tune-container {
+  background-color: whitesmoke;
+  padding: 10px;
+}
