@@ -9,6 +9,7 @@ import { Recorder } from './pages/record/Recorder';
 import { TranscriberProvider } from './transcription/TranscriberProvider';
 import { AudioContextProvider } from './service/AudioContextProvider';
 import { NotesSearchComponent } from './components/notes-search/NotesSearchComponent';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
     declarations: [
@@ -21,6 +22,7 @@ import { NotesSearchComponent } from './components/notes-search/NotesSearchCompo
         AppRoutingModule,
         BrowserModule,
         HttpClientModule,
+        BrowserAnimationsModule,
     ],
     providers: [
         AudioContextProvider,
