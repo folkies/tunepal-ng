@@ -1,8 +1,8 @@
-import { ITranscriber, TranscriptionResult, TranscriptionInitParams } from 'src/app/transcription/Transcription';
-import { _Config } from '../../Config';
-import { Remote } from 'comlink';
 import { Injectable } from '@angular/core';
-import Config from '../../Config';
+import { Remote } from 'comlink';
+import { TranscriberProvider } from 'src/app/transcription/TranscriberProvider';
+import { ITranscriber, PushResult, TranscriptionInitParams, TranscriptionResult } from 'src/app/transcription/Transcription';
+import Config, { _Config } from '../../Config';
 
 @Injectable()
 export class Recorder {
@@ -46,63 +46,52 @@ export class Recorder {
     get status() { return this._status; }
     get signal() { return this._signal; }
 
-    constructor() {
+    constructor(private transcriberProvider: TranscriberProvider) {
         this.config = Config;
+        this._transcriber = this.transcriberProvider.transcriber();
 
         this._status = Status.STOPPED;
 
-        const _AudioContext = window['AudioContext'] || window['webkitAudioContext'];
-        this._audioContext = new _AudioContext();
 
 
         // this._transcriber.onProgress = progress => this.analysisProgress = progress;
     }
 
     onTranscribed(result: TranscriptionResult): void {
-
+        console.log(`Transcription: ${result.transcription}`);
     }
 
-    initAsync() {
-        return new Promise((resolve, reject) => {
+    async initAudio(): Promise<void> {
+        const _AudioContext = window['AudioContext'] || window['webkitAudioContext'];
+        this._audioContext = new _AudioContext();
+
+        if (this._audioContext.state === 'suspended') {
+            await this._audioContext.resume();
+        }
+
+        try {
+            this._stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             if (this._stream) {
                 this._status = Status.INIT_SUCCEEDED;
-                resolve();
+                const bufferSize = 4096;
+
+                this._input = this._audioContext.createMediaStreamSource(this._stream);
+                this._processor = this._audioContext.createScriptProcessor(bufferSize, 1, 1);
+            
+                this._processor.onaudioprocess = e => this._update(e);
+            
+                this._input.connect(this._processor);
+                this._processor.connect(this._audioContext.destination);
+        
             }
-            else if (navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                this._status = Status.INIT;
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(stream => this._onStream(stream, resolve))
-                    .catch(error => this._onStreamError(error, reject));
-            }
-            else {
-                this._status = Status.API_MISSING;
-            }
-        });
+        }
+        catch (err) {
+            this._status = Status.INIT_FAILED;
+        }
     }
 
     close() {
         //this._transcriber._close();
-    }
-
-    _onStream(stream, resolve) {
-        this._stream = stream;
-        this._bufferSize = 4096;
-
-        this._input = this._audioContext.createMediaStreamSource(stream);
-        this._processor = this._audioContext.createScriptProcessor(this._bufferSize, 1, 1);
-
-        this._processor.onaudioprocess = e => this._update(e);
-
-        this._input.connect(this._processor);
-        this._processor.connect(this._audioContext.destination);
-
-        this._status = Status.INIT_SUCCEEDED;
-        resolve();
-    }
-
-    _onStreamError(error, reject) {
-        this._status = Status.INIT_FAILED;
-        reject(error);
     }
 
     start() {
@@ -114,7 +103,7 @@ export class Recorder {
             blankTime: this.blankTime,
             fundamental: this.fundamental,
             enableSampleRateConversion: this.enableSampleRateConversion,
-            frameSize: Number.parseInt(this.transcriberFrameSize),
+            //frameSize: Number.parseInt(this.transcriberFrameSize),
         };
 
         this._transcriber.initialize(initParams)
@@ -133,7 +122,7 @@ export class Recorder {
         this._stream = null;
     }
 
-    _update(e) {
+    _update(e: AudioProcessingEvent) {
         if (this._status != Status.RECORDING) {
             return;
         };
@@ -145,7 +134,7 @@ export class Recorder {
             .then(msg => this._analyzeSignal(msg));
     }
 
-    _analyzeSignal(msg) {
+    _analyzeSignal(msg: PushResult) {
         this._amplitude = msg.amplitude;
         this._timeRecorded = msg.timeRecorded;
 

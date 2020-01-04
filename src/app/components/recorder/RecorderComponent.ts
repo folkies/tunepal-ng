@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, NgZone } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Recorder } from 'src/app/pages/record/Recorder';
@@ -21,7 +21,7 @@ export class RecorderComponent implements AfterViewInit {
     private renderer: Renderer;
     private _requestId: number;
 
-    constructor(private recorder: Recorder, private router: Router) {
+    constructor(private recorder: Recorder, private router: Router, private zone: NgZone) {
         this.config = Config;
         this.recorder = recorder;
         this.recorder.onTranscribed = result => this.onTranscribed(result);
@@ -47,6 +47,7 @@ export class RecorderComponent implements AfterViewInit {
     }
 
     onTranscribed(result: TranscriptionResult) {
-        this.router.navigate([`/notesSearch/${result.transcription}`]);
+        this.zone.run(() =>
+            this.router.navigate([`/notesSearch/${result.transcription}`]));
     }
 }

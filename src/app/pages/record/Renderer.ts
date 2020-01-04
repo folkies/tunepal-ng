@@ -49,8 +49,6 @@ export default class Renderer {
     }
 
     _recordClicked() {
-        this.recorder.audioContext.resume();
-
         if (this._timeLeft > 0) {
             this._timeLeft = 0;
             this.recorder.stop();
@@ -61,7 +59,7 @@ export default class Renderer {
         switch (this.recorder.status) {
             case Status.STOPPED:
             case Status.ANALYSIS_SUCCEEDED:
-                this.recorder.initAsync()
+                this.recorder.initAudio()
                     .then(() => this._startCountingDown());
                 break;
             case Status.RECORDING:

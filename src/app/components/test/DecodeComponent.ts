@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Remote } from 'comlink';
 import Transcriber from 'src/app/transcription/Transcriber';
 import { TranscriberProvider } from 'src/app/transcription/TranscriberProvider';
-import { ITranscriber } from 'src/app/transcription/Transcription';
+import { ITranscriber, PushResult } from 'src/app/transcription/Transcription';
 
 enum Status {
     STOPPED = 'STOPPED',
@@ -33,13 +33,13 @@ export class DecodeComponent {
     constructor(
         private transcriberProvider: TranscriberProvider,
         private httpClient: HttpClient) {
-            const _AudioContext = window['AudioContext'] || window['webkitAudioContext'];
-            this._audioContext = new _AudioContext();
             this.status = Status.STOPPED;
             this.transcriber = this.transcriberProvider.transcriber();
     }
 
     public async decode(): Promise<void> {
+        const _AudioContext = window['AudioContext'] || window['webkitAudioContext'];
+        this._audioContext = new _AudioContext();
         if (this._audioContext.state === 'suspended') {
             await this._audioContext.resume();
         }
@@ -52,6 +52,8 @@ export class DecodeComponent {
     }
 
     public async record(): Promise<void> {
+        const _AudioContext = window['AudioContext'] || window['webkitAudioContext'];
+        this._audioContext = new _AudioContext();
         if (this._audioContext.state === 'suspended') {
             await this._audioContext.resume();
         }
@@ -98,7 +100,7 @@ export class DecodeComponent {
         this.stream.getTracks().forEach(t => t.stop());
     }
 
-    async _analyzeSignal(msg): Promise<void> {    
+    async _analyzeSignal(msg: PushResult): Promise<void> {    
         if (!msg.isBufferFull) {
             return;
         }
