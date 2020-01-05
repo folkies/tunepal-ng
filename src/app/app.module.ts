@@ -13,6 +13,8 @@ import { NotesSearchComponent } from './components/notes-search/NotesSearchCompo
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TuneComponent } from './components/tune/TuneComponent';
 import { TuneViewComponent } from './components/tune-view/tune-view.component';
+import { RouteReuseStrategy } from '@angular/router';
+import { CustomReuseStrategy } from './service/custom-reuse-strategy';
 
 @NgModule({
     declarations: [
@@ -33,6 +35,7 @@ import { TuneViewComponent } from './components/tune-view/tune-view.component';
     providers: [
         AudioContextProvider,
         Recorder,
+        { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
         TranscriberProvider
     ],
     bootstrap: [AppComponent]
