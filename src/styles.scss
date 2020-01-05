@@ -48,7 +48,7 @@ $navbar-height-mobile: 56px !default;
   }
   
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; height: 100%;}
 
 .tune-link {
   cursor: pointer;
@@ -64,4 +64,12 @@ div.tune-view {
 div.tune-container {
   background-color: whitesmoke;
   padding: 10px;
+}
+
+.custom-sidenav-container {
+  height: 100%;
+}
+
+mat-sidenav mat-icon {
+  margin-right: 0.5em;
 }
