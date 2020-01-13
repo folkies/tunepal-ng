@@ -80,7 +80,7 @@ export class Recorder {
     }
 
     close() {
-        //this._transcriber._close();
+        //this.stop();
     }
 
     start() {
@@ -103,7 +103,9 @@ export class Recorder {
         this._amplitude = 0;
         this._timeRecorded = 0;
         this._stream && this._stream.getTracks().forEach(t => t.stop());
-    }
+        this._processor.disconnect(this._audioContext.destination);        
+        this._input.disconnect(this._processor);
+}
 
     destroy() {
         this.stop();

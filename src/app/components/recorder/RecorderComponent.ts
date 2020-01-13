@@ -1,6 +1,5 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, NgZone } from '@angular/core';
-import { NavigationStart, Router } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { AfterViewInit, Component, ElementRef, NgZone, ViewChild } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { Recorder } from 'src/app/pages/record/Recorder';
 import Renderer from 'src/app/pages/record/Renderer';
 import { TranscriptionResult } from 'src/app/transcription/Transcription';
@@ -28,10 +27,13 @@ export class RecorderComponent implements AfterViewInit {
         this._requestId = zone.runOutsideAngular(() => window.requestAnimationFrame(() => this._update()));
 
         router.events
-            .pipe(filter(evt => evt instanceof NavigationStart))
             .subscribe(event => {
-                window.cancelAnimationFrame(this._requestId);
-                this.recorder.close();
+                if (event instanceof NavigationEnd) {
+                    const url = (event as NavigationEnd).url;
+                    if (url.endsWith('record')) {
+                        this._requestId = zone.runOutsideAngular(() => window.requestAnimationFrame(() => this._update()));
+                    }
+                }
             });
     }
 
@@ -47,7 +49,14 @@ export class RecorderComponent implements AfterViewInit {
 
     onTranscribed(result: TranscriptionResult) {
         console.log(`Transcription: ${result.transcription}`);
-        this.zone.run(() =>
-            this.router.navigate([`/notesSearch/${result.transcription}`]));
+        if (! result.transcription) {
+            return;
+        }
+        this.zone.run(() => {
+            window.cancelAnimationFrame(this._requestId);
+            this.recorder.close();
+
+            this.router.navigate([`/notesSearch/${result.transcription}`])
+        });
     }
 }
