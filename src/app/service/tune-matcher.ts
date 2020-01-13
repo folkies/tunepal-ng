@@ -19,7 +19,7 @@ export class TuneMatcher {
 
     findBestMatches(query: string): IndexedTune[] {
         let numTunes = 0;
-        let results = [];
+        let results: IndexedTune[] = [];
         for (let tune of this.indexedTunes) {
             tune.ed = minEdSubString(query, tune.normalized, this.d);
             tune.confidence = 1.0 - (tune.ed / query.length);
@@ -31,7 +31,18 @@ export class TuneMatcher {
             }
         }
         results.sort((left, right) => left.ed - right.ed);
-        return results.slice(0, 10);
-    }
-    
+        const topHits = [];
+        let tuneId = '';
+        for (let tune of results) {
+            if (tune.tune !== tuneId) {
+                tuneId = tune.tune;
+                topHits.push(tune);
+                if (topHits.length === 10)  {
+                    break;
+                }
+            }
+        }
+
+        return topHits;
+    }   
 }
