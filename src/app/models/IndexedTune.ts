@@ -4,4 +4,5 @@ export interface IndexedTune {
     name: string;
     normalized: string;
     ed?: number;
+    confidence?: number;
 };

@@ -49,7 +49,7 @@ export class NotesSearchComponent implements OnInit {
 
     private toTune(indexedTune: IndexedTune): Tune {
         return new Tune({
-            confidence: 0,
+            confidence: Math.round(indexedTune.confidence * 1000) / 10,
             ed: indexedTune.ed,
             id: 0,
             tunepalid: indexedTune.tune,

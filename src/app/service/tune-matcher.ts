@@ -22,6 +22,8 @@ export class TuneMatcher {
         let results = [];
         for (let tune of this.indexedTunes) {
             tune.ed = minEdSubString(query, tune.normalized, this.d);
+            tune.confidence = 1.0 - (tune.ed / query.length);
+
             results.push(tune);
             numTunes++;
             if (numTunes % 1000 === 0) {
