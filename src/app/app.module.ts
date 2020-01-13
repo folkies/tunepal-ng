@@ -20,7 +20,9 @@ import { TuneComponent } from './components/tune/TuneComponent';
 import { Recorder } from './pages/record/Recorder';
 import { AudioContextProvider } from './service/AudioContextProvider';
 import { CustomReuseStrategy } from './service/custom-reuse-strategy';
+import { CorpusLoader } from './service/corpus-loader';
 import { TranscriberProvider } from './transcription/TranscriberProvider';
+import { TuneMatcherProvider } from './service/tune-matcher-provider';
 
 @NgModule({
     declarations: [
@@ -46,9 +48,11 @@ import { TranscriberProvider } from './transcription/TranscriberProvider';
     ],
     providers: [
         AudioContextProvider,
+        CorpusLoader,
         Recorder,
         { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
-        TranscriberProvider
+        TranscriberProvider,
+        TuneMatcherProvider
     ],
     bootstrap: [AppComponent]
 })

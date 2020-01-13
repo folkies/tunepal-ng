@@ -4,6 +4,8 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { RawTune } from 'src/app/models/RawTune';
 import Tune from 'src/app/models/Tune';
 import Config, { _Config } from '../../Config';
+import { TuneMatcherProvider } from 'src/app/service/tune-matcher-provider';
+import { IndexedTune } from 'src/app/models/IndexedTune';
 
 
 @Component({
@@ -16,13 +18,14 @@ export class NotesSearchComponent implements OnInit {
 
     constructor(
         private route: ActivatedRoute,
-        private httpClient: HttpClient
+        private httpClient: HttpClient,
+        private tuneMatcherProvider: TuneMatcherProvider
     ) {
         this.config = Config;
     }
 
     ngOnInit(): void {
-        this.route.paramMap.subscribe(map => this.consumeNotes(map));
+        this.route.paramMap.subscribe(map => this.consumeNotesNew(map));
     }
 
     private async consumeNotes(map: ParamMap): Promise<void> {
@@ -37,4 +40,24 @@ export class NotesSearchComponent implements OnInit {
         this.tunes = response.map(t => new Tune(t));
     }
 
+    private async consumeNotesNew(map: ParamMap): Promise<void> {
+        const notes = map.get('notes');
+        const tuneMatcher = await this.tuneMatcherProvider.tuneMatcher();
+        const indexedTunes = tuneMatcher.findBestMatches(notes);
+        this.tunes = indexedTunes.map(t => this.toTune(t));
+    }
+
+    private toTune(indexedTune: IndexedTune): Tune {
+        return new Tune({
+            confidence: 0,
+            ed: indexedTune.ed,
+            id: 0,
+            tunepalid: indexedTune.tune,
+            keySignature: '',
+            source: '',
+            sourceId: 0,
+            title: indexedTune.name,
+            x: 1
+        });
+    }
 }
