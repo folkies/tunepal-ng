@@ -1,20 +1,23 @@
+import { getLogger, Logger } from '@log4js2/core';
 import { IndexedTune } from '../models/IndexedTune';
 import { minEdSubString } from './edit-distance';
 
 export class TuneMatcher {
     indexedTunes: IndexedTune[];
-    d : number[][] = [];
+    d: number[][] = [];
+
+    private readonly log: Logger = getLogger('TuneMatcher');
 
     constructor() {
 
         const MAX = 1000;
         for (let i = 0; i < 2; i++) {
             const row: number[] = [];
-            for (let j= 0; j < MAX; j++) {
+            for (let j = 0; j < MAX; j++) {
                 row.push(0);
             }
             this.d.push(row);
-        }    
+        }
     }
 
     findBestMatches(query: string): IndexedTune[] {
@@ -27,7 +30,7 @@ export class TuneMatcher {
             results.push(tune);
             numTunes++;
             if (numTunes % 1000 === 0) {
-                console.log(`${numTunes} tunes`);
+                this.log.info(`${numTunes} tunes`);
             }
         }
         results.sort((left, right) => left.ed - right.ed);
@@ -37,12 +40,12 @@ export class TuneMatcher {
             if (tune.tune !== tuneId) {
                 tuneId = tune.tune;
                 topHits.push(tune);
-                if (topHits.length === 10)  {
+                if (topHits.length === 10) {
                     break;
                 }
             }
         }
 
         return topHits;
-    }   
+    }
 }

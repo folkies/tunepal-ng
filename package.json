@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "~8.2.8",
     "@angular/router": "~8.2.8",
     "@briebug/jest-schematic": "^1.7.0",
+    "@log4js2/core": "^2.0.9",
     "@types/jquery": "^3.3.31",
     "abcjs": "^5.12.0",
     "angular-audio-context": "^26.0.6",

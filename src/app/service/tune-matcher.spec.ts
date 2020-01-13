@@ -1,8 +1,10 @@
 import fs from 'fs';
 import { IndexedTune } from '../models/IndexedTune';
 import { TuneMatcher } from "./tune-matcher";
+import { Logger, getLogger } from '@log4js2/core';
 
 describe('TuneMatcher', () => {
+    let log: Logger = getLogger('TuneMatcherSpec');
     let d : number[][] = [];
 
     const MAX = 1000;
@@ -15,15 +17,15 @@ describe('TuneMatcher', () => {
     }
     
     test('should match tune', () => {
-        console.log('loading JSON');
+        log.info('loading JSON');
         const json = fs.readFileSync('src/assets/indexed-tunes.json', 'utf8');
-        console.log('loaded JSON');
+        log.info('loaded JSON');
         const tunes: IndexedTune[] = JSON.parse(json);
-        console.log('parsed JSON');
+        log.info('parsed JSON');
         const matcher = new TuneMatcher();
         matcher.indexedTunes = tunes;
 
         const matches = matcher.findBestMatches('CEGFGEDDCDDDADDFAAFADFAAAFFGAGDGEDCDEGGFGAFDDFEDDCEBBCCEDCEFGEDCDDDEDFAAFADFAEAFGADGEDD');
-        matches.forEach(match => console.log(`${match.ed} ${match.name}`));
+        matches.forEach(match => log.info(`${match.ed} ${match.name}`));
     });
 });
