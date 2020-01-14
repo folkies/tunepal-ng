@@ -1,4 +1,4 @@
-export default class Tunebook {
+export class Tunebook {
     id: number;
     fullName: string;
     shortName: string;

@@ -1,9 +1,9 @@
-import Config from '../config';
+import { Config } from '../config';
 import { TunebookManager } from './TunebookManager';
-import Tunebook from './Tunebook';
+import { Tunebook } from './Tunebook';
 import { RawTune } from './RawTune';
 
-export default class Tune {
+export class Tune {
     title: string;
     titleEncoded: string;
     altTitle: string;

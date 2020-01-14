@@ -1,5 +1,5 @@
 //import Config from '../Config.es6lib';
-import Tunebook from './Tunebook';
+import { Tunebook } from './Tunebook';
 import LocalStorage from '../utils/LocalStorageUtils';
 
 export class _TunebookManager {

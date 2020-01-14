@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Remote } from 'comlink';
 import { TranscriberProvider } from 'src/app/transcription/transcriber-provider';
 import { ITranscriber, PushResult, TranscriptionInitParams, TranscriptionResult } from 'src/app/transcription/transcription';
-import Config, { _Config } from '../../config';
+import { Config,  _Config } from '../../config';
 import { AudioContextProvider } from 'src/app/service/audio-context-provider';
 
 @Injectable()

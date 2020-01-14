@@ -1,5 +1,5 @@
-import Config from '../config';
-import Tune from './Tune';
+import { Config } from '../config';
+import { Tune } from './Tune';
 import Cache from '../utils/CacheUtils';
 
 class _TunepalApi {

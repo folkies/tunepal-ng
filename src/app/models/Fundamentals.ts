@@ -1,4 +1,4 @@
-const Fundamentals = [
+export const Fundamentals = [
     'Bb',
     'B',
     'C',
@@ -7,5 +7,3 @@ const Fundamentals = [
     'F',
     'G',
 ];
-
-export default Fundamentals;

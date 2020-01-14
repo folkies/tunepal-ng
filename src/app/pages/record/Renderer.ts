@@ -1,6 +1,5 @@
-import Config from '../../config';
+import { Config, _Config } from '../../config';
 import { Recorder, Status } from './recorder';
-import { _Config } from '../../config';
 const LogoPath = 'assets/images/recording_logo.png';
 
 interface Point {
@@ -8,7 +7,7 @@ interface Point {
     y: number;
 }
 
-export default class Renderer {
+export class Renderer {
     config: _Config;
     recorder: any;
     private _canvas: HTMLCanvasElement;

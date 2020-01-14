@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { RawTune } from 'src/app/models/RawTune';
-import Tune from 'src/app/models/Tune';
-import Config, { _Config } from '../../config';
+import { Tune }from 'src/app/models/Tune';
+import {Config,  _Config } from '../../config';
 
 
 @Component({

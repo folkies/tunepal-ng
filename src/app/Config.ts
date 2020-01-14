@@ -1,9 +1,9 @@
-import Fundamentals from './models/Fundamentals';
-import MidiInstruments from './models/MidiInstruments';
-import TimeSignatures from './models/TimeSignatures';
-import TranscriberFrameSizes from './models/TranscriberFrameSizes';
+import { Fundamentals } from './models/Fundamentals';
+import { MidiInstruments } from './models/MidiInstruments';
+import { TimeSignatures } from './models/TimeSignatures';
+import { TranscriberFrameSizes } from './models/TranscriberFrameSizes';
 import { TunebookManager, _TunebookManager } from './models/TunebookManager';
-import Utils from './utils/Utils';
+import { Utils } from './utils/Utils';
 import LocalStorage from './utils/LocalStorageUtils';
 
 export class _Config implements ConfigProperties {
@@ -132,6 +132,4 @@ export interface ConfigProperties {
   transpose?: number;
 }
 
-let Config = new _Config();
-
-export default Config;
+export const Config = new _Config();
