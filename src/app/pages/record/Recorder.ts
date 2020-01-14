@@ -63,7 +63,7 @@ export class Recorder {
                 this._input = this._audioContext.createMediaStreamSource(this._stream);
                 this._processor = this._audioContext.createScriptProcessor(bufferSize, 1, 1);
             
-                this._processor.onaudioprocess = e => this._update(e);
+                this._processor.onaudioprocess = e => this.update(e);
             
                 this._input.connect(this._processor);
                 this._processor.connect(this._audioContext.destination);        
@@ -107,7 +107,7 @@ export class Recorder {
         this._stream = null;
     }
 
-    async _update(e: AudioProcessingEvent): Promise<void> {
+    private async update(e: AudioProcessingEvent): Promise<void> {
         if (this._status != Status.RECORDING) {
             return;
         };
@@ -120,11 +120,11 @@ export class Recorder {
         this._timeRecorded = msg.timeRecorded;
 
         if (msg.isBufferFull) {
-            await this._analyzeSignal(msg);
+            await this.analyzeSignal(msg);
         }
     }
 
-    async _analyzeSignal(msg: PushResult): Promise<void> {
+    private async analyzeSignal(msg: PushResult): Promise<void> {
         this.stop();
         this._status = Status.ANALYZING;
 

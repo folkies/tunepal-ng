@@ -3,26 +3,26 @@ import Transcriber, { TranscriptionResult } from './Transcriber';
 import { ITranscriber, PushResult, TranscriptionInitParams } from './Transcription';
 
 export class TranscriberImpl implements ITranscriber {
-    private _transcriber: Transcriber;
-    private _signal: Float32Array[];
-    private _currNumSamples: number;
+    private transcriber: Transcriber;
+    private signal: Float32Array[];
+    private currNumSamples: number;
 
     initialize(initParams: TranscriptionInitParams): void {
-        this._transcriber = new Transcriber(initParams);
-        this._resetSignal();
+        this.transcriber = new Transcriber(initParams);
+        this.resetSignal();
     }    
     
-    private _resetSignal() {
-        this._signal = [];
-        this._currNumSamples = 0;
+    private resetSignal() {
+        this.signal = [];
+        this.currNumSamples = 0;
     }
     
     private mergeSignal() {
-        let length = this._transcriber.numInputSamples;
+        let length = this.transcriber.numInputSamples;
         let signal = new Float32Array(length);
         let currNumSamples = 0;
 
-        for (let buffer of this._signal) {
+        for (let buffer of this.signal) {
             let newNumSamples = currNumSamples + buffer.length;
 
             if (newNumSamples <= length) {
@@ -41,13 +41,13 @@ export class TranscriberImpl implements ITranscriber {
     transcribe(signal?: Float32Array, midi: boolean = false): TranscriptionResult {
         let theSignal = signal ? signal : this.mergeSignal();
 
-        let transcription = this._transcriber.transcribe(theSignal, midi);
+        let transcription = this.transcriber.transcribe(theSignal, midi);
         console.log(`Worker: transcription: ${transcription}`);
 
         const resultMsg = {
             transcription: transcription,
-            sampleRate: this._transcriber.outputSampleRate,
-            numSamples: this._transcriber.numOutputSamples,
+            sampleRate: this.transcriber.outputSampleRate,
+            numSamples: this.transcriber.numOutputSamples,
         };
 
 
@@ -55,8 +55,8 @@ export class TranscriberImpl implements ITranscriber {
     }
 
     pushSignal(signal: Float32Array): PushResult {
-        this._signal.push(signal);
-        this._currNumSamples += signal.length;
+        this.signal.push(signal);
+        this.currNumSamples += signal.length;
 
         let largest = Number.MIN_VALUE;
 
@@ -66,13 +66,11 @@ export class TranscriberImpl implements ITranscriber {
 
         return {
             amplitude: largest,
-            timeRecorded: this._currNumSamples / this._transcriber.inputSampleRate,
-            isBufferFull: this._currNumSamples >= this._transcriber.numInputSamples,
+            timeRecorded: this.currNumSamples / this.transcriber.inputSampleRate,
+            isBufferFull: this.currNumSamples >= this.transcriber.numInputSamples,
         };
     }
-
 }
-
 
 const transcriber = new TranscriberImpl();
 

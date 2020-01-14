@@ -1,8 +1,7 @@
 import { DSP, FFT, WindowFunction } from 'src/lib/dsp';
-import TranscriberUtils from '../utils/TranscriberUtils';
-import FuzzyHistogram from './FuzzyHistogram';
-import PitchDetector from './PitchDetector';
-import PitchSpeller from './PitchSpeller';
+import { FuzzyHistogram } from './FuzzyHistogram';
+import { PitchDetector } from './PitchDetector';
+import { PitchSpeller } from './PitchSpeller';
 import { TranscriptionInitParams } from './Transcription';
 
 const DEFAULT_SAMPLE_RATE = 22050;
@@ -27,58 +26,48 @@ export interface TranscriptionResult {
 }
 
 export default class Transcriber {
-    private _inputSampleRate: number;
-    private _sampleTime: number;
-    private _blankTime: number;
-    private _fundamental: string;
-    private _enableSampleRateConversion: boolean;
-    private _progress: number;
-    private _interrupted: boolean;
-    private _signal: Float32Array;
-    private _outputSampleRate: number;
-    private _numInputSamples: number;
-    private _numOutputSamples: number;
-    private _frameSize: any;
-    private _hopSize: number;
-    private _windowFunction: WindowFunction;
-    private _powerSpectrum: FFT;
+    readonly inputSampleRate: number;
+    readonly outputSampleRate: number;
+    readonly numInputSamples: number;
+    readonly numOutputSamples: number;
+
+    private sampleTime: number;
+    private blankTime: number;
+    private fundamental: string;
+    private enableSampleRateConversion: boolean;
+    private progress: number;
+    private interrupted: boolean;
+    private signal: Float32Array;
+
+    private frameSize: any;
+    private hopSize: number;
+    private windowFunction: WindowFunction;
+    private powerSpectrum: FFT;
 
     private onProgress: (x: number) => void;
 
-    get inputSampleRate() { return this._inputSampleRate; }
-    get sampleTime() { return this._sampleTime; }
-    get blankTime() { return this._blankTime; }
-    get fundamental() { return this._fundamental; }
-    get enableSampleRateConversion() { return this._enableSampleRateConversion; }
-    get progress() { return this._progress; }
-    get interrupted() { return this._interrupted; }
-    get signal() { return this._signal; }
-    get outputSampleRate() { return this._outputSampleRate; }
-    get numInputSamples() { return this._numInputSamples; }
-    get numOutputSamples() { return this._numOutputSamples; }
-
     constructor(params: TranscriptionInitParams) {
-        this._inputSampleRate = typeof params.inputSampleRate !== 'undefined'
+        this.inputSampleRate = typeof params.inputSampleRate !== 'undefined'
             ? params.inputSampleRate
             : DEFAULT_SAMPLE_RATE;
 
-        this._sampleTime = typeof params.sampleTime !== 'undefined'
+        this.sampleTime = typeof params.sampleTime !== 'undefined'
             ? params.sampleTime
             : DEFAULT_SAMPLE_TIME;
 
-        this._blankTime = typeof params.blankTime !== 'undefined'
+        this.blankTime = typeof params.blankTime !== 'undefined'
             ? params.blankTime
             : DEFAULT_BLANK_TIME;
 
-        this._fundamental = typeof params.fundamental !== 'undefined'
+        this.fundamental = typeof params.fundamental !== 'undefined'
             ? params.fundamental
             : DEFAULT_FUNDAMENTAL;
 
-        this._enableSampleRateConversion = typeof params.enableSampleRateConversion !== 'undefined'
+        this.enableSampleRateConversion = typeof params.enableSampleRateConversion !== 'undefined'
             ? params.enableSampleRateConversion
             : false;
 
-        this._frameSize = typeof params.frameSize !== 'undefined'
+        this.frameSize = typeof params.frameSize !== 'undefined'
             ? params.frameSize
             : DEFAULT_FRAME_SIZE;
 
@@ -86,62 +75,62 @@ export default class Transcriber {
             ? params.onProgress
             : (x: number) => { };
 
-        if (this._enableSampleRateConversion) {
-            this._outputSampleRate = DEFAULT_SAMPLE_RATE;
+        if (this.enableSampleRateConversion) {
+            this.outputSampleRate = DEFAULT_SAMPLE_RATE;
         }
         else {
-            this._outputSampleRate = this._inputSampleRate;
+            this.outputSampleRate = this.inputSampleRate;
         }
 
-        this._numInputSamples = this._inputSampleRate * (this._blankTime + this._sampleTime);
-        this._numOutputSamples = this._outputSampleRate * (this._blankTime + this._sampleTime);
+        this.numInputSamples = this.inputSampleRate * (this.blankTime + this.sampleTime);
+        this.numOutputSamples = this.outputSampleRate * (this.blankTime + this.sampleTime);
 
-        if (this._frameSize === 'auto') {
-            this._frameSize = TranscriberUtils.calcFrameSize(this._outputSampleRate);
+        if (this.frameSize === 'auto') {
+            this.frameSize = this.calcFrameSize(this.outputSampleRate);
         }
 
-        this._hopSize = this._frameSize * (1 - OVERLAP);
+        this.hopSize = this.frameSize * (1 - OVERLAP);
 
-        console.log('Frame size and hop size:', this._frameSize, this._hopSize);
+        console.log('Frame size and hop size:', this.frameSize, this.hopSize);
 
-        this._windowFunction = new WindowFunction(DSP.HANN);
-        this._powerSpectrum = new FFT(this._frameSize, this._outputSampleRate);
+        this.windowFunction = new WindowFunction(DSP.HANN);
+        this.powerSpectrum = new FFT(this.frameSize, this.outputSampleRate);
     }
 
     transcribe(signal: Float32Array, midi = false): string {
-        if (this._enableSampleRateConversion) {
-            this._signal = this._convertSampleRate(signal);
+        if (this.enableSampleRateConversion) {
+            this.signal = this.convertSampleRate(signal);
         }
         else {
-            this._signal = signal;
+            this.signal = signal;
         }
 
-        let speller = new PitchSpeller(this._fundamental);
-        let numHops = Math.floor((this._outputSampleRate * this._sampleTime - this._frameSize) / this._hopSize) + 1;
+        let speller = new PitchSpeller(this.fundamental);
+        let numHops = Math.floor((this.outputSampleRate * this.sampleTime - this.frameSize) / this.hopSize) + 1;
         let notes: Note[] = [];
         let lastNote = '';
-        const numBlankSamples = this._blankTime * this._outputSampleRate;
+        const numBlankSamples = this.blankTime * this.outputSampleRate;
 
         for (let i = 0; i < numHops; i++) {
-            if (this._interrupted) {
+            if (this.interrupted) {
                 return '';
             }
 
-            let startAt = numBlankSamples + this._hopSize * i;
-            this._progress = i / numHops;
-            this.onProgress(this._progress);
+            let startAt = numBlankSamples + this.hopSize * i;
+            this.progress = i / numHops;
+            this.onProgress(this.progress);
 
-            let frame = this._signal.slice(startAt, startAt + this._frameSize);
+            let frame = this.signal.slice(startAt, startAt + this.frameSize);
             
             // skip last frame if it is too short
-            if (frame.length != this._frameSize) {
+            if (frame.length != this.frameSize) {
                 continue;
             }
 
-            this._windowFunction.process(frame);
-            let spectrum = this._powerSpectrum.forward(frame);
+            this.windowFunction.process(frame);
+            let spectrum = this.powerSpectrum.forward(frame);
 
-            let frequency = PitchDetector.mikelsFrequency(spectrum, this._outputSampleRate, this._frameSize);
+            let frequency = PitchDetector.mikelsFrequency(spectrum, this.outputSampleRate, this.frameSize);
 
             let currentNote = midi
                 ? speller.spellFrequencyAsMidi(frequency)
@@ -152,24 +141,24 @@ export default class Transcriber {
                 let note = {
                     spelling: currentNote,
                     frequency: frequency,
-                    onset: startAt / this._outputSampleRate,
+                    onset: startAt / this.outputSampleRate,
                 };
                 notes.push(note);
             }
         }
 
-        let transcription = this._postProcess(notes, midi);
+        let transcription = this.postProcess(notes, midi);
         return transcription;
     }
 
-    _convertSampleRate(inSignal: Float32Array): Float32Array {
+    private convertSampleRate(inSignal: Float32Array): Float32Array {
         let outSignal = new Float32Array(this.numOutputSamples);
         let end = 0;
 
         for (let i = 0; i < outSignal.length; i++) {
             //TODO: smooth interpolation
             let begin = end;
-            end = Math.floor((i + 1) * this._inputSampleRate / this._outputSampleRate);
+            end = Math.floor((i + 1) * this.inputSampleRate / this.outputSampleRate);
             let sum = 0;
 
             for (let j = begin; j < end; j++) {
@@ -182,7 +171,7 @@ export default class Transcriber {
         return outSignal;
     }
 
-    _postProcess(notes: Note[], midi: boolean): string {
+    private postProcess(notes: Note[], midi: boolean): string {
         let transcription = '';
 
         for (let i = 0; i < notes.length - 1; i++) {
@@ -190,14 +179,14 @@ export default class Transcriber {
             if (notes[i].duration < 0) console.log(notes[i + 1].onset, notes[i].onset);
         }
 
-        notes.slice(-1)[0].duration = this._blankTime + this._sampleTime - notes.slice(-1)[0].onset;
+        notes.slice(-1)[0].duration = this.blankTime + this.sampleTime - notes.slice(-1)[0].onset;
 
         let durations = new Array(notes.length);
         for (let i = 0; i < notes.length; i++) {
             durations[i] = notes[i].duration;
         }
 
-        let quaverLength = FuzzyHistogram.calculatePeek(durations, 0.33, 0.1);
+        let quaverLength = FuzzyHistogram.calculatePeak(durations, 0.33, 0.1);
 
         for (let note of notes) {
             if (note.spelling == 'Z') continue;
@@ -213,4 +202,16 @@ export default class Transcriber {
 
         return transcription;
     }
+
+    private calcFrameSize(sampleRate: number): number {
+        const idealFrameSize = sampleRate / 10;
+        const prev = this.prevPow2(idealFrameSize);
+        const next = prev * 2;
+        return next - idealFrameSize < prev - idealFrameSize ? next : prev;
+    }
+
+    private prevPow2(v: number): number {
+        return Math.pow(2, Math.floor(Math.log(v) / Math.log(2)));
+    }
+
 }

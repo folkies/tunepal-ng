@@ -1,5 +1,6 @@
-export default class FuzzyHistogram {
-    static calculatePeek(data: number[], fuzz: number, atLeast: number): number {
+export class FuzzyHistogram {
+    
+    static calculatePeak(data: number[], fuzz: number, atLeast: number): number {
         let duration = 0;
         let candidateLengths = [];
 

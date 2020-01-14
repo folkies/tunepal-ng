@@ -1,9 +1,10 @@
-export default class PitchDetector {
+export class PitchDetector {
+    
     static mikelsFrequency(fftMag: number[], sampleRate: number, frameSize: number): number {
         let frequency = 0;
         let pitchPeek = 2;
 
-        let peaks = PitchDetector._calculatePeaks(fftMag, pitchPeek, fftMag.length, 0);
+        let peaks = PitchDetector.calculatePeaks(fftMag, pitchPeek, fftMag.length, 0);
 
         peaks.sort((a, b) => fftMag[b] - fftMag[a]);
 
@@ -44,7 +45,7 @@ export default class PitchDetector {
         return frequency;
     }
 
-    static _calculatePeaks(data: number[], border: number, howFar: number, thresholdNormal: number): number[] {
+    private static calculatePeaks(data: number[], border: number, howFar: number, thresholdNormal: number): number[] {
         let thresholdValue = 0;
 
         if (thresholdNormal > 0) {
