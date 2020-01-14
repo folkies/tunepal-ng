@@ -20,7 +20,6 @@ import { TuneComponent } from './components/tune/TuneComponent';
 import { Recorder } from './pages/record/recorder';
 import { AudioContextProvider } from './service/audio-context-provider';
 import { CustomReuseStrategy } from './service/custom-reuse-strategy';
-import { CorpusLoader } from './service/corpus-loader';
 import { TranscriberProvider } from './transcription/transcriber-provider';
 import { TuneMatcherProvider } from './service/tune-matcher-provider';
 
@@ -48,7 +47,6 @@ import { TuneMatcherProvider } from './service/tune-matcher-provider';
     ],
     providers: [
         AudioContextProvider,
-        CorpusLoader,
         Recorder,
         { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
         TranscriberProvider,
