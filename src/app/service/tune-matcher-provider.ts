@@ -13,8 +13,7 @@ export class TuneMatcherProvider {
     async tuneMatcher(): Promise<TuneMatcher> {
         if (!this.instance) {
             const indexedTunes = await this.corpusLoader.loadCorpus();
-            const matcher = new TuneMatcher();
-            matcher.indexedTunes = indexedTunes;
+            const matcher = new TuneMatcher(indexedTunes);
             this.instance = matcher;
         }
         return this.instance;

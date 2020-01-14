@@ -1,4 +1,4 @@
-export interface IndexedTune {
+export interface NormalizedTune {
     tune: string;
     setting: string;
     name: string;

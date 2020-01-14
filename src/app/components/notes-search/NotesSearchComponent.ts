@@ -5,7 +5,7 @@ import { RawTune } from 'src/app/models/RawTune';
 import { Tune } from 'src/app/models/Tune';
 import { Config, _Config } from '../../config';
 import { TuneMatcherProvider } from 'src/app/service/tune-matcher-provider';
-import { IndexedTune } from 'src/app/models/IndexedTune';
+import { NormalizedTune } from 'src/app/models/normalized-tune';
 
 
 @Component({
@@ -47,7 +47,7 @@ export class NotesSearchComponent implements OnInit {
         this.tunes = indexedTunes.map(t => this.toTune(t));
     }
 
-    private toTune(indexedTune: IndexedTune): Tune {
+    private toTune(indexedTune: NormalizedTune): Tune {
         return new Tune({
             confidence: Math.round(indexedTune.confidence * 1000) / 10,
             ed: indexedTune.ed,

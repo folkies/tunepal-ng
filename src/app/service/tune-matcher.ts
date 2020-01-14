@@ -1,14 +1,14 @@
 import { getLogger, Logger } from '@log4js2/core';
-import { IndexedTune } from '../models/IndexedTune';
+import { NormalizedTune } from '../models/normalized-tune';
 import { minEdSubString } from './edit-distance';
 
 export class TuneMatcher {
-    indexedTunes: IndexedTune[];
-    d: number[][] = [];
+    
+    private d: number[][] = [];
 
     private readonly log: Logger = getLogger('TuneMatcher');
 
-    constructor() {
+    constructor(private normalizedTunes: NormalizedTune[]) {
 
         const MAX = 1000;
         for (let i = 0; i < 2; i++) {
@@ -20,10 +20,10 @@ export class TuneMatcher {
         }
     }
 
-    findBestMatches(query: string): IndexedTune[] {
+    findBestMatches(query: string): NormalizedTune[] {
         let numTunes = 0;
-        let results: IndexedTune[] = [];
-        for (let tune of this.indexedTunes) {
+        let results: NormalizedTune[] = [];
+        for (let tune of this.normalizedTunes) {
             tune.ed = minEdSubString(query, tune.normalized, this.d);
             tune.confidence = 1.0 - (tune.ed / query.length);
 

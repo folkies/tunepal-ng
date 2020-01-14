@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { IndexedTune } from '../models/IndexedTune';
+import { NormalizedTune } from '../models/normalized-tune';
 import { TuneMatcher } from "./tune-matcher";
 import { Logger, getLogger } from '@log4js2/core';
 
@@ -20,10 +20,9 @@ describe('TuneMatcher', () => {
         log.info('loading JSON');
         const json = fs.readFileSync('src/assets/indexed-tunes.json', 'utf8');
         log.info('loaded JSON');
-        const tunes: IndexedTune[] = JSON.parse(json);
+        const tunes: NormalizedTune[] = JSON.parse(json);
         log.info('parsed JSON');
-        const matcher = new TuneMatcher();
-        matcher.indexedTunes = tunes;
+        const matcher = new TuneMatcher(tunes);
 
         const matches = matcher.findBestMatches('CEGFGEDDCDDDADDFAAFADFAAAFFGAGDGEDCDEGGFGAFDDFEDDCEBBCCEDCEFGEDCDDDEDFAAFADFAEAFGADGEDD');
         matches.forEach(match => log.info(`${match.ed} ${match.name}`));
