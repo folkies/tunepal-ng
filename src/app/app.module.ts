@@ -17,11 +17,11 @@ import { RecorderComponent } from './components/recorder/RecorderComponent';
 import { DecodeComponent } from './components/test/DecodeComponent';
 import { TuneViewComponent } from './components/tune-view/tune-view.component';
 import { TuneComponent } from './components/tune/TuneComponent';
-import { Recorder } from './pages/record/Recorder';
-import { AudioContextProvider } from './service/AudioContextProvider';
+import { Recorder } from './pages/record/recorder';
+import { AudioContextProvider } from './service/audio-context-provider';
 import { CustomReuseStrategy } from './service/custom-reuse-strategy';
 import { CorpusLoader } from './service/corpus-loader';
-import { TranscriberProvider } from './transcription/TranscriberProvider';
+import { TranscriberProvider } from './transcription/transcriber-provider';
 import { TuneMatcherProvider } from './service/tune-matcher-provider';
 
 @NgModule({

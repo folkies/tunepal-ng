@@ -1,4 +1,4 @@
-import Config from './Config';
+import Config from './config';
 
 describe('Config', () => {
     test('should have dynamic properties', () => {

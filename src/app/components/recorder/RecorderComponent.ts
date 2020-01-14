@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { Recorder } from 'src/app/pages/record/Recorder';
-import Renderer from 'src/app/pages/record/Renderer';
-import { TranscriptionResult } from 'src/app/transcription/Transcription';
-import Config, { _Config } from '../../Config';
+import { Recorder } from 'src/app/pages/record/recorder';
+import Renderer from 'src/app/pages/record/renderer';
+import { TranscriptionResult } from 'src/app/transcription/transcription';
+import Config, { _Config } from '../../config';
 
 
 @Component({

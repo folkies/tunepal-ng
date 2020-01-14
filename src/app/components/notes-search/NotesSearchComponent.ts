@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { RawTune } from 'src/app/models/RawTune';
 import Tune from 'src/app/models/Tune';
-import Config, { _Config } from '../../Config';
+import Config, { _Config } from '../../config';
 import { TuneMatcherProvider } from 'src/app/service/tune-matcher-provider';
 import { IndexedTune } from 'src/app/models/IndexedTune';
 

@@ -1,6 +1,6 @@
 import { expose } from 'comlink';
-import Transcriber, { TranscriptionResult } from './Transcriber';
-import { ITranscriber, PushResult, TranscriptionInitParams } from './Transcription';
+import Transcriber, { TranscriptionResult } from './transcriber';
+import { ITranscriber, PushResult, TranscriptionInitParams } from './transcription';
 
 export class TranscriberImpl implements ITranscriber {
     private transcriber: Transcriber;

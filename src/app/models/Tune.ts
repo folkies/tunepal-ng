@@ -1,4 +1,4 @@
-import Config from '../Config';
+import Config from '../config';
 import { TunebookManager } from './TunebookManager';
 import Tunebook from './Tunebook';
 import { RawTune } from './RawTune';

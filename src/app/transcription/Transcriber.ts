@@ -1,8 +1,8 @@
 import { DSP, FFT, WindowFunction } from 'src/lib/dsp';
-import { FuzzyHistogram } from './FuzzyHistogram';
-import { PitchDetector } from './PitchDetector';
-import { PitchSpeller } from './PitchSpeller';
-import { TranscriptionInitParams } from './Transcription';
+import { FuzzyHistogram } from './fuzzy-histogram';
+import { PitchDetector } from './pitch-detector';
+import { PitchSpeller } from './pitch-speller';
+import { TranscriptionInitParams } from './transcription';
 
 const DEFAULT_SAMPLE_RATE = 22050;
 const DEFAULT_SAMPLE_TIME = 12;

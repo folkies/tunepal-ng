@@ -1,6 +1,6 @@
-import Config from '../../Config';
-import { Recorder, Status } from './Recorder';
-import { _Config } from '../../Config';
+import Config from '../../config';
+import { Recorder, Status } from './recorder';
+import { _Config } from '../../config';
 const LogoPath = 'assets/images/recording_logo.png';
 
 interface Point {

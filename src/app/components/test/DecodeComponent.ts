@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Remote } from 'comlink';
-import Transcriber from 'src/app/transcription/Transcriber';
-import { TranscriberProvider } from 'src/app/transcription/TranscriberProvider';
-import { ITranscriber, PushResult } from 'src/app/transcription/Transcription';
+import Transcriber from 'src/app/transcription/transcriber';
+import { TranscriberProvider } from 'src/app/transcription/transcriber-provider';
+import { ITranscriber, PushResult } from 'src/app/transcription/transcription';
 
 enum Status {
     STOPPED = 'STOPPED',
