@@ -22,19 +22,14 @@ export class Recorder {
     analysisProgress: number;
 
     get sampleTime() { return this.config.sampleTime; }
-    set sampleTime(value) { this.config.sampleTime = value; }
 
     get blankTime() { return this.config.blankTime; }
-    set blankTime(value) { this.config.blankTime = value; }
 
     get fundamental() { return this.config.fundamental; }
-    set fundamental(value) { this.config.fundamental = value; }
 
     get enableSampleRateConversion() { return this.config.enableSampleRateConversion; }
-    set enableSampleRateConversion(value) { this.config.enableSampleRateConversion = value; }
 
     get transcriberFrameSize() { return this.config.transcriberFrameSize; }
-    set transcriberFrameSize(value) { this.config.transcriberFrameSize = value; }
 
     get audioContext() { return this._audioContext; }
     get sampleRate() { return this._audioContext.sampleRate; }

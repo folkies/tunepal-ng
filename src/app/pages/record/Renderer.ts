@@ -31,7 +31,6 @@ export default class Renderer {
     _logoTopLeft: Point;
 
     get countdownTime() { return this.config.countdownTime; }
-    set countdownTime(value) { this.config.countdownTime = value; }
 
     constructor(config: _Config, recorder: Recorder, canvas: HTMLCanvasElement, container: HTMLElement) {
         this.config = config;
